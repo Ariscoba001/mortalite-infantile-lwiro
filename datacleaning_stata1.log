@@ -1,0 +1,1306 @@
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  <dossier de travail>\datacleaning_stata1.log
+  log type:  text
+ opened on:  18 Jun 2026, 14:00:04
+
+. 
+. 
+. /*-----------------------------------------------------------------------
+> *   II. COLLECTE DES DONNÉES : CHARGEMENT ET STANDARDISATION
+> *
+> *   Les données sont réparties en dix bases de formats variés
+> *   (.dta, .xls, .xlsx, .sav). Avant de les fusionner, chaque base
+> *   est standardisée selon le dictionnaire de données.
+> *
+> *   Observation préalable sur les variables alb et durhosp :
+> *   L'exploration des bases révèle que la variable "alb" (albumine
+> *   sérique en g/L) correspond exactement à la variable N°4 du
+> *   dictionnaire, tant par ses valeurs [4,9–53,6] que par son type.
+> *   La variable "durhosp" présente dans les fichiers bruts est quant
+> *   à elle hors dictionnaire. Elle est donc supprimée, et "alb" est
+> *   renommée en "durhosp" pour respecter le code officiel.
+> *   Les variables "ivri" et "var" sont également hors dictionnaire
+> *   et supprimées systématiquement.
+> *-----------------------------------------------------------------------*/
+. 
+. * ── Base 1 : enfant1.dta (observations 1 à 100) ─────────────────────
+. use "enfant1.dta", clear
+
+. sort id
+
+. 
+. drop var ivri durhosp
+
+. rename alb durhosp
+
+. 
+. save "enfant1_clean.dta", replace
+(file enfant1_clean.dta not found)
+file enfant1_clean.dta saved
+
+. 
+. 
+. * ── Base 2 : enfant2.dta (observations 101 à 150) ───────────────────
+. use "enfant2.dta", clear
+
+. sort id
+
+. 
+. * La variable "sexe" est nommée "sexee" dans cette base
+. rename sexee sexe
+
+. 
+. drop var ivri durhosp
+
+. rename alb durhosp
+
+. 
+. save "enfant2_clean.dta", replace
+(file enfant2_clean.dta not found)
+file enfant2_clean.dta saved
+
+. 
+. 
+. * ── Base 3 : enfant3.dta (observations 151 à 300) ───────────────────
+. use "enfant3.dta", clear
+
+. sort id
+
+. 
+. * La variable "v18" est nommée "v17" dans cette base
+. rename v17 v18
+
+. 
+. * La variable "cheveux" est absente du dictionnaire
+. drop cheveux ivri durhosp
+
+. rename alb durhosp
+
+. 
+. save "enfant3_clean.dta", replace
+(file enfant3_clean.dta not found)
+file enfant3_clean.dta saved
+
+. 
+. 
+. * ── Base 4 : enfant4.dta (observations 301 à 400) ───────────────────
+. use "enfant4.dta", clear
+
+. sort id
+
+. 
+. * La variable "etum" est nommée "etumm" dans cette base
+. rename etumm etum
+
+. 
+. * Certaines variables sont stockées en chaîne de caractères
+. destring id oed durhosp pbr, replace
+id: all characters numeric; replaced as int
+oed: all characters numeric; replaced as byte
+(1 missing value generated)
+durhosp: all characters numeric; replaced as byte
+(1 missing value generated)
+pbr: all characters numeric; replaced as int
+
+. 
+. drop ivri durhosp
+
+. rename alb durhosp
+
+. 
+. save "enfant4_clean.dta", replace
+(file enfant4_clean.dta not found)
+file enfant4_clean.dta saved
+
+. 
+. 
+. * ── Base 5 : enfant5.dta (observations 401 à 475) ───────────────────
+. use "enfant5.dta", clear
+
+. sort id
+
+. 
+. * La variable "etat" est nommée "etat_deces" dans cette base
+. rename etat_deces etat
+
+. 
+. * La plupart des variables sont en chaîne de caractères dans cette base
+. destring id rang sitmatm oed ivri diar peau mala v18 durhosp etat pbr, replace
+id: all characters numeric; replaced as int
+rang: all characters numeric; replaced as byte
+(8 missing values generated)
+sitmatm: all characters numeric; replaced as byte
+oed: all characters numeric; replaced as byte
+ivri: all characters numeric; replaced as byte
+diar: all characters numeric; replaced as byte
+peau: all characters numeric; replaced as byte
+mala: all characters numeric; replaced as byte
+v18: all characters numeric; replaced as byte
+(4 missing values generated)
+durhosp: all characters numeric; replaced as int
+(2 missing values generated)
+etat: all characters numeric; replaced as byte
+pbr: all characters numeric; replaced as int
+
+. 
+. drop var ivri durhosp
+
+. rename alb durhosp
+
+. 
+. save "enfant5_clean.dta", replace
+(file enfant5_clean.dta not found)
+file enfant5_clean.dta saved
+
+. 
+. 
+. * ── Base 6 : enfant6.xls (observations 476 à 600) ───────────────────
+. import excel "enfant6.xls", firstrow clear
+(14 vars, 125 obs)
+
+. sort id
+
+. 
+. * La variable "diar" est nommée "diarrhee" dans cette base
+. rename diarrhee diar
+
+. 
+. drop ivri durhosp
+
+. rename alb durhosp
+
+. 
+. save "enfant6_clean.dta", replace
+(file enfant6_clean.dta not found)
+file enfant6_clean.dta saved
+
+. 
+. 
+. * ── Base 7 : enfant7.xlsx (observations 601 à 700) ──────────────────
+. import excel "enfant7.xlsx", firstrow clear
+(16 vars, 110 obs)
+
+. sort id
+
+. 
+. drop ivri durhosp
+
+. rename alb durhosp
+
+. 
+. save "enfant7_clean.dta", replace
+(file enfant7_clean.dta not found)
+file enfant7_clean.dta saved
+
+. 
+. 
+. * ── Base 8 : enfant8.sav (observations 701 à 800) ───────────────────
+. import spss "enfant8.sav", clear
+(13 vars, 100 obs)
+
+. sort id
+
+. 
+. drop ivri durhosp
+
+. rename alb durhosp
+
+. 
+. save "enfant8_clean.dta", replace
+(file enfant8_clean.dta not found)
+file enfant8_clean.dta saved
+
+. 
+. 
+. * ── Base 9 : enfant9.sav (observations 801 à 900) ───────────────────
+. import spss "enfant9.sav", clear
+(16 vars, 100 obs)
+
+. sort id
+
+. 
+. rename etat_deces etat
+
+. 
+. drop ivri durhosp
+
+. rename alb durhosp
+
+. 
+. save "enfant9_clean.dta", replace
+(file enfant9_clean.dta not found)
+file enfant9_clean.dta saved
+
+. 
+. 
+. * ── Base 10 : enfant10.sav (observations 901 à 1129) ────────────────
+. import spss "enfant10.sav", clear
+(15 vars, 229 obs)
+
+. sort id
+
+. 
+. drop var ivri durhosp
+
+. rename alb durhosp
+
+. 
+. save "enfant10_clean.dta", replace
+(file enfant10_clean.dta not found)
+file enfant10_clean.dta saved
+
+. 
+. 
+. /*-----------------------------------------------------------------------
+> *   III. CONCATÉNATION DES DIX BASES
+> *-----------------------------------------------------------------------*/
+. 
+. use "enfant1_clean.dta", clear
+
+. 
+. append using      ///
+>     "enfant2_clean.dta"  ///
+>     "enfant3_clean.dta"  ///
+>     "enfant4_clean.dta"  ///
+>     "enfant5_clean.dta"  ///
+>     "enfant6_clean.dta"  ///
+>     "enfant7_clean.dta"  ///
+>     "enfant8_clean.dta"  ///
+>     "enfant9_clean.dta"  ///
+>     "enfant10_clean.dta"
+(variable id was byte, now int to accommodate using data's values)
+
+. 
+. sort id
+
+. describe
+
+Contains data from enfant1_clean.dta
+ Observations:         1,139                  
+    Variables:            14                  18 Jun 2026 14:00
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+id              int     %10.0g                id
+sexe            byte    %10.0g                sexe
+etum            byte    %10.0g                etum
+rang            byte    %10.0g                rang
+sitmatm         byte    %10.0g                sitmatm
+oed             byte    %10.0g                oed
+diar            byte    %10.0g                diar
+peau            byte    %10.0g                peau
+mala            byte    %10.0g                mala
+durhosp         double  %10.0g                alb
+v18             byte    %10.0g                v18
+etat            byte    %10.0g                etat
+pbr             int     %10.0g                pbr
+age             int     %10.0g                age
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Sorted by: id
+     Note: Dataset has changed since last saved.
+
+. codebook
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+id                                                                                                                                                                                  id
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                  Type: Numeric (int)
+
+                 Range: [1,1129]                      Units: 1
+         Unique values: 1,129                     Missing .: 0/1,139
+
+                  Mean: 566.106
+             Std. dev.: 324.836
+
+           Percentiles:     10%       25%       50%       75%       90%
+                            114       285       570       845      1016
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+sexe                                                                                                                                                                              sexe
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [1,2]                         Units: 1
+         Unique values: 2                         Missing .: 303/1,139
+
+            Tabulation: Freq.  Value
+                          409  1
+                          427  2
+                          303  .
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+etum                                                                                                                                                                              etum
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [0,2]                         Units: 1
+         Unique values: 3                         Missing .: 567/1,139
+
+            Tabulation: Freq.  Value
+                          356  0
+                           98  1
+                          118  2
+                          567  .
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+rang                                                                                                                                                                              rang
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [1,17]                        Units: 1
+         Unique values: 16                        Missing .: 309/1,139
+
+                  Mean: 4.60843
+             Std. dev.: 2.99653
+
+           Percentiles:     10%       25%       50%       75%       90%
+                              1         2         4         7         9
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+sitmatm                                                                                                                                                                        sitmatm
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [0,4]                         Units: 1
+         Unique values: 5                         Missing .: 755/1,139
+
+            Tabulation: Freq.  Value
+                          180  0
+                           37  1
+                           49  2
+                           94  3
+                           24  4
+                          755  .
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+oed                                                                                                                                                                                oed
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [0,1]                         Units: 1
+         Unique values: 2                         Missing .: 11/1,139
+
+            Tabulation: Freq.  Value
+                          798  0
+                          330  1
+                           11  .
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+diar                                                                                                                                                                              diar
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [0,1]                         Units: 1
+         Unique values: 2                         Missing .: 1/1,139
+
+            Tabulation: Freq.  Value
+                          738  0
+                          400  1
+                            1  .
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+peau                                                                                                                                                                              peau
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [0,1]                         Units: 1
+         Unique values: 2                         Missing .: 2/1,139
+
+            Tabulation: Freq.  Value
+                        1,009  0
+                          128  1
+                            2  .
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+mala                                                                                                                                                                              mala
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [0,1]                         Units: 1
+         Unique values: 2                         Missing .: 2/1,139
+
+            Tabulation: Freq.  Value
+                          836  0
+                          301  1
+                            2  .
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+durhosp                                                                                                                                                                            alb
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                  Type: Numeric (double)
+
+                 Range: [4.9,53.6]                    Units: .1
+         Unique values: 344                       Missing .: 97/1,139
+
+                  Mean: 23.9895
+             Std. dev.: 8.59587
+
+           Percentiles:     10%       25%       50%       75%       90%
+                           12.7      17.6      23.7      29.5      35.1
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+v18                                                                                                                                                                                v18
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [0,2]                         Units: 1
+         Unique values: 3                         Missing .: 112/1,139
+
+            Tabulation: Freq.  Value
+                          726  0
+                          299  1
+                            2  2
+                          112  .
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+etat                                                                                                                                                                              etat
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [0,1]                         Units: 1
+         Unique values: 2                         Missing .: 0/1,139
+
+            Tabulation: Freq.  Value
+                          198  0
+                          941  1
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+pbr                                                                                                                                                                                pbr
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                  Type: Numeric (int)
+
+                 Range: [70,252]                      Units: 1
+         Unique values: 81                        Missing .: 74/1,139
+
+                  Mean: 132.946
+             Std. dev.: 21.6823
+
+           Percentiles:     10%       25%       50%       75%       90%
+                            110       120       130       145       160
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+age                                                                                                                                                                                age
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                  Type: Numeric (int)
+
+                 Range: [0,199]                       Units: 1
+         Unique values: 148                       Missing .: 283/1,139
+
+                  Mean: 43.3131
+             Std. dev.: 42.0334
+
+           Percentiles:     10%       25%       50%       75%       90%
+                              5        11        29        60       113
+
+. 
+. save "enfant_concat.dta", replace
+(file enfant_concat.dta not found)
+file enfant_concat.dta saved
+
+. 
+. 
+. /*-----------------------------------------------------------------------
+> *   IV. IDENTIFICATION ET GESTION DES DOUBLONS
+> *-----------------------------------------------------------------------*/
+. 
+. duplicates report
+
+Duplicates in terms of all variables
+
+--------------------------------------
+   Copies | Observations       Surplus
+----------+---------------------------
+        1 |         1119             0
+        2 |           20            10
+--------------------------------------
+
+. duplicates list
+
+Duplicates in terms of all variables
+
+  +------------------------------------------------------------------------------------------------------------------+
+  | Group   Obs    id   sexe   etum   rang   sitmatm   oed   diar   peau   mala     durhosp   v18   etat   pbr   age |
+  |------------------------------------------------------------------------------------------------------------------|
+  |     1   682   682      2      1      2         1     1      0      0      0   20.700001     0      1   140    23 |
+  |     1   683   682      2      1      2         1     1      0      0      0   20.700001     0      1   140    23 |
+  |     2   684   683      1      0      3         1     0      0      0      0        19.1     0      1   150   177 |
+  |     2   685   683      1      0      3         1     0      0      0      0        19.1     0      1   150   177 |
+  |     3   686   684      2      0     10         1     1      0      0      1   20.700001     1      1   138    37 |
+  |------------------------------------------------------------------------------------------------------------------|
+  |     3   687   684      2      0     10         1     1      0      0      1   20.700001     1      1   138    37 |
+  |     4   688   685      2      2      3         0     0      0      0      0   32.799999     0      1   145    33 |
+  |     4   689   685      2      2      3         0     0      0      0      0   32.799999     0      1   145    33 |
+  |     5   690   686      2      2      3         0     0      0      0      0   39.200001     0      1   145    33 |
+  |     5   691   686      2      2      3         0     0      0      0      0   39.200001     0      1   145    33 |
+  |------------------------------------------------------------------------------------------------------------------|
+  |     6   701   696      2      2     10         0     0      0      0      0        29.5     0      1   125     6 |
+  |     6   702   696      2      2     10         0     0      0      0      0        29.5     0      1   125     6 |
+  |     7   703   697      2      0      3         3     1      0      0      0        20.1     0      1   162   118 |
+  |     7   704   697      2      0      3         3     1      0      0      0        20.1     0      1   162   118 |
+  |     8   705   698      2      .     12         0     0      0      0      1        26.6     0      1   160    15 |
+  |------------------------------------------------------------------------------------------------------------------|
+  |     8   706   698      2      .     12         0     0      0      0      1        26.6     0      1   160    15 |
+  |     9   707   699      2      0      5         0     0      0      0      0   32.200001     0      1   130     6 |
+  |     9   708   699      2      0      5         0     0      0      0      0   32.200001     0      1   130     6 |
+  |    10   709   700      2      0      3         3     1      0      0      0        12.3     1      1   140    52 |
+  |    10   710   700      2      0      3         3     1      0      0      0        12.3     1      1   140    52 |
+  +------------------------------------------------------------------------------------------------------------------+
+
+. 
+. * Repérage des doublons sur l'identifiant
+. by id : gen doublon = cond(_N == 1, 0, _n)
+
+. tab doublon
+
+    doublon |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      1,119       98.24       98.24
+          1 |         10        0.88       99.12
+          2 |         10        0.88      100.00
+------------+-----------------------------------
+      Total |      1,139      100.00
+
+. 
+. * On conserve le premier exemplaire de chaque doublon
+. drop if doublon > 1
+(10 observations deleted)
+
+. drop if id == .
+(0 observations deleted)
+
+. drop doublon
+
+. 
+. save "enfant_concat.dta", replace
+file enfant_concat.dta saved
+
+. 
+. 
+. /*-----------------------------------------------------------------------
+> *   V. FUSION AVEC LA BASE CSD
+> *
+> *   La base CSD.dta contient les variables socio-démographiques
+> *   (sexe, age, etum, sitmatm, rang) pour l'ensemble des individus.
+> *   On l'utilise pour compléter les variables manquantes dans la base
+> *   concaténée, sans écraser les valeurs déjà renseignées.
+> *-----------------------------------------------------------------------*/
+. 
+. * Préparation de la base CSD
+. use "CSD.dta", clear
+
+. sort id
+
+. 
+. destring id sexe age etum rang, replace
+id: all characters numeric; replaced as int
+sexe: all characters numeric; replaced as byte
+(5 missing values generated)
+age: all characters numeric; replaced as int
+(15 missing values generated)
+etum: all characters numeric; replaced as byte
+(265 missing values generated)
+rang: all characters numeric; replaced as int
+(95 missing values generated)
+
+. 
+. * La variable sitmatm est stockée en libellé dans CSD — recodage numérique
+. gen sitmatm_num = .
+(1,129 missing values generated)
+
+. replace sitmatm_num = 0 if sitmatm == "célibataire"
+(497 real changes made)
+
+. replace sitmatm_num = 1 if sitmatm == "mariée"
+(169 real changes made)
+
+. replace sitmatm_num = 2 if sitmatm == "polygamie"
+(122 real changes made)
+
+. replace sitmatm_num = 3 if sitmatm == "veuve/veuf"
+(323 real changes made)
+
+. drop sitmatm
+
+. rename sitmatm_num sitmatm
+
+. 
+. keep id sexe age etum sitmatm rang
+
+. 
+. rename sexe    sexe_csd
+
+. rename age     age_csd
+
+. rename etum    etum_csd
+
+. rename sitmatm sitmatm_csd
+
+. rename rang    rang_csd
+
+. 
+. save "CSD_clean.dta", replace
+(file CSD_clean.dta not found)
+file CSD_clean.dta saved
+
+. 
+. 
+. * Fusion 1:1 sur l'identifiant
+. use "enfant_concat.dta", clear
+
+. merge 1:1 id using "CSD_clean.dta"
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                             1,129  (_merge==3)
+    -----------------------------------------
+
+. tab _merge
+
+   Matching result from |
+                  merge |      Freq.     Percent        Cum.
+------------------------+-----------------------------------
+            Matched (3) |      1,129      100.00      100.00
+------------------------+-----------------------------------
+                  Total |      1,129      100.00
+
+. 
+. * Complétion des valeurs manquantes depuis CSD
+. replace sexe    = sexe_csd    if missing(sexe)    & !missing(sexe_csd)
+(298 real changes made)
+
+. replace age     = age_csd     if missing(age)     & !missing(age_csd)
+(268 real changes made)
+
+. replace etum    = etum_csd    if missing(etum)    & !missing(etum_csd)
+(301 real changes made)
+
+. replace sitmatm = sitmatm_csd if missing(sitmatm) & !missing(sitmatm_csd)
+(745 real changes made)
+
+. replace rang    = rang_csd    if missing(rang)    & !missing(rang_csd)
+(214 real changes made)
+
+. 
+. drop sexe_csd age_csd etum_csd sitmatm_csd rang_csd _merge
+
+. 
+. save "enfants_work.dta", replace
+(file enfants_work.dta not found)
+file enfants_work.dta saved
+
+. 
+. 
+. /*-----------------------------------------------------------------------
+> *   VI. DIAGNOSTIC DES VALEURS MANQUANTES
+> *-----------------------------------------------------------------------*/
+. 
+. use "enfants_work.dta", clear
+
+. misstable summarize
+                                                               Obs<.
+                                                +------------------------------
+               |                                | Unique
+      Variable |     Obs=.     Obs>.     Obs<.  | values        Min         Max
+  -------------+--------------------------------+------------------------------
+          sexe |         5               1,124  |      2          1           2
+          etum |       265                 864  |      3          0           2
+          rang |        95               1,034  |     17          1         100
+       sitmatm |        10               1,119  |      5          0           4
+           oed |        11               1,118  |      2          0           1
+          diar |         1               1,128  |      2          0           1
+          peau |         2               1,127  |      2          0           1
+          mala |         2               1,127  |      2          0           1
+       durhosp |        97               1,032  |    344        4.9        53.6
+           v18 |       112               1,017  |      3          0           2
+           pbr |        74               1,055  |     81         70         252
+           age |        15               1,114  |    154          0        2033
+  -----------------------------------------------------------------------------
+
+. 
+. 
+. /*-----------------------------------------------------------------------
+> *   VII. IDENTIFICATION ET GESTION DES VALEURS ABERRANTES
+> *
+> *   On écarte toute valeur en dehors des plages définies dans le
+> *   dictionnaire de données, en la remplaçant par une valeur manquante
+> *   qui sera ensuite imputée à l'étape suivante.
+> *-----------------------------------------------------------------------*/
+. 
+. * durhosp — albumine sérique [4,9 – 53,6 g/L]
+. replace durhosp = . if durhosp < 4.9  | durhosp > 53.6
+(0 real changes made)
+
+. 
+. * age — âge à l'admission [0 – 199 mois]
+. replace age = . if age < 0 | age > 199
+(2 real changes made, 2 to missing)
+
+. 
+. * pbr — périmètre brachial [70 – 252 mm]
+. replace pbr = . if pbr < 70 | pbr > 252
+(0 real changes made)
+
+. 
+. * rang — rang dans la fratrie [1 – 17]
+. replace rang = . if rang < 1 | rang > 17
+(1 real change made, 1 to missing)
+
+. 
+. * sitmatm — situation matrimoniale [0 – 3]
+. replace sitmatm = . if sitmatm < 0 | sitmatm > 3
+(24 real changes made, 24 to missing)
+
+. 
+. * sexe [1 – 2]
+. replace sexe = . if sexe < 1 | sexe > 2
+(0 real changes made)
+
+. 
+. * v18 — classification de Waterlow [0 – 2]
+. replace v18 = . if v18 < 0 | v18 > 2
+(0 real changes made)
+
+. 
+. * Variables dichotomiques [0 – 1]
+. foreach var of varlist oed diar peau mala {
+  2.     replace `var' = . if `var' != 0 & `var' != 1
+  3. }
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+
+. 
+. misstable summarize
+                                                               Obs<.
+                                                +------------------------------
+               |                                | Unique
+      Variable |     Obs=.     Obs>.     Obs<.  | values        Min         Max
+  -------------+--------------------------------+------------------------------
+          sexe |         5               1,124  |      2          1           2
+          etum |       265                 864  |      3          0           2
+          rang |        96               1,033  |     16          1          17
+       sitmatm |        34               1,095  |      4          0           3
+           oed |        11               1,118  |      2          0           1
+          diar |         1               1,128  |      2          0           1
+          peau |         2               1,127  |      2          0           1
+          mala |         2               1,127  |      2          0           1
+       durhosp |        97               1,032  |    344        4.9        53.6
+           v18 |       112               1,017  |      3          0           2
+           pbr |        74               1,055  |     81         70         252
+           age |        17               1,112  |    152          0         199
+  -----------------------------------------------------------------------------
+
+. 
+. save "enfants_work.dta", replace
+file enfants_work.dta saved
+
+. 
+. 
+. /*-----------------------------------------------------------------------
+> *   VIII. IMPUTATION DES VALEURS MANQUANTES RÉSIDUELLES
+> *
+> *   Le choix de la méthode d'imputation tient compte du type de variable
+> *   et du taux de valeurs manquantes observé :
+> *     – Médiane pour les variables quantitatives (distributions asymétriques)
+> *     – Mode pour les variables qualitatives à faible taux de VM (< 10%)
+> *     – Tirage aléatoire selon la distribution empirique pour etum et v18,
+> *       dont les taux de VM sont plus élevés (respectivement ~23% et ~10%)
+> *-----------------------------------------------------------------------*/
+. 
+. use "enfants_work.dta", clear
+
+. 
+. * ── Variables quantitatives — imputation par la médiane ──────────────
+. 
+. sum durhosp, detail
+
+                             alb
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%          7.2            4.9
+ 5%         10.5              6
+10%         12.7            6.1       Obs               1,032
+25%         17.6            6.2       Sum of wgt.       1,032
+
+50%         23.7                      Mean           23.97665
+                        Largest       Std. dev.      8.603081
+75%        29.45           49.2
+90%         35.1             50       Variance         74.013
+95%           39           50.2       Skewness       .3344094
+99%           47           53.6       Kurtosis       2.967649
+
+. replace durhosp = r(p50) if missing(durhosp)
+(97 real changes made)
+
+. 
+. sum pbr, detail
+
+                             pbr
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%           80             70
+ 5%          100             70
+10%          110             70       Obs               1,055
+25%          120             74       Sum of wgt.       1,055
+
+50%          130                      Mean           132.8455
+                        Largest       Std. dev.      21.73337
+75%          145            220
+90%          160            225       Variance       472.3395
+95%          170            230       Skewness       .6531945
+99%          200            252       Kurtosis       5.246912
+
+. replace pbr = r(p50) if missing(pbr)
+(74 real changes made)
+
+. 
+. sum age, detail
+
+                             age
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%            0              0
+ 5%            3              0
+10%            5              0       Obs               1,112
+25%           11              0       Sum of wgt.       1,112
+
+50%           28                      Mean           41.66906
+                        Largest       Std. dev.      41.07759
+75%           59            186
+90%          103            186       Variance       1687.368
+95%          132            198       Skewness       1.401576
+99%          174            199       Kurtosis       4.463279
+
+. replace age = r(p50) if missing(age)
+(17 real changes made)
+
+. 
+. sum rang, detail
+
+                            rang
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%            1              1
+ 5%            1              1
+10%            1              1       Obs               1,033
+25%            2              1       Sum of wgt.       1,033
+
+50%            4                      Mean           4.465634
+                        Largest       Std. dev.      2.933869
+75%            6             14
+90%            9             14       Variance       8.607587
+95%           10             15       Skewness       .8367294
+99%           12             17       Kurtosis       3.254184
+
+. replace rang = r(p50) if missing(rang)
+(96 real changes made)
+
+. 
+. * ── Variables qualitatives à faible taux de VM — mode ────────────────
+. 
+. * Mode = 0 pour les variables dichotomiques suivantes
+. foreach var of varlist oed diar peau mala {
+  2.     replace `var' = 0 if missing(`var')
+  3. }
+(11 real changes made)
+(1 real change made)
+(2 real changes made)
+(2 real changes made)
+
+. 
+. replace sexe    = 1 if missing(sexe)     // mode : garçon
+(5 real changes made)
+
+. replace sitmatm = 0 if missing(sitmatm)  // mode : célibataire
+(34 real changes made)
+
+. 
+. * ── etum (~23% de VM) — tirage aléatoire selon distribution empirique ─
+. *
+. *   Distribution observée sur les non-manquants :
+. *       Pas d'étude (0)     : 64,70 %
+. *       Primaires (1)        : 16,90 %
+. *       Secondaires et + (2) : 18,40 %
+. 
+. set seed 20260611
+
+. 
+. gen u = runiform() if missing(etum)
+(864 missing values generated)
+
+. replace etum = 0 if missing(etum) & u <  0.6470
+(176 real changes made)
+
+. replace etum = 1 if missing(etum) & u >= 0.6470 & u < 0.8360
+(49 real changes made)
+
+. replace etum = 2 if missing(etum) & u >= 0.8360
+(40 real changes made)
+
+. drop u
+
+. 
+. * ── v18 (~10% de VM) — tirage aléatoire selon distribution empirique ─
+. *
+. *   Distribution observée sur les non-manquants :
+. *       À risque (0)              : 70,60 %
+. *       À haut risque (1)         : 29,20 %
+. *       À très haut risque (2)    :  0,20 %
+. 
+. gen u = runiform() if missing(v18)
+(1,017 missing values generated)
+
+. replace v18 = 0 if missing(v18) & u <  0.7060
+(80 real changes made)
+
+. replace v18 = 1 if missing(v18) & u >= 0.7060 & u < 0.9980
+(32 real changes made)
+
+. replace v18 = 2 if missing(v18) & u >= 0.9980
+(0 real changes made)
+
+. drop u
+
+. 
+. * Vérification : aucune valeur manquante ne doit subsister
+. misstable summarize
+(variables nonmissing or string)
+
+. 
+. save "enfants_work.dta", replace
+file enfants_work.dta saved
+
+. 
+. 
+. /*-----------------------------------------------------------------------
+> *   IX. RECODAGE DE LA VARIABLE DÉPENDANTE
+> *
+> *   Conformément à la consigne de l'encadreur, la valeur 1 désigne
+> *   la présence de l'événement étudié, c'est-à-dire le décès.
+> *   Dans les données brutes, etat = 1 correspond à "vivant" — on
+> *   procède donc à une inversion.
+> *-----------------------------------------------------------------------*/
+. 
+. use "enfants_work.dta", clear
+
+. 
+. tab etat
+
+       etat |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |        198       17.54       17.54
+          1 |        931       82.46      100.00
+------------+-----------------------------------
+      Total |      1,129      100.00
+
+. 
+. gen etat_new = 1 - etat
+
+. drop etat
+
+. rename etat_new etat
+
+. 
+. * Vérification : les décédés (~17,5%) doivent être codés 1
+. tab etat
+
+       etat |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |        931       82.46       82.46
+          1 |        198       17.54      100.00
+------------+-----------------------------------
+      Total |      1,129      100.00
+
+. 
+. save "enfants_work.dta", replace
+file enfants_work.dta saved
+
+. 
+. 
+. /*-----------------------------------------------------------------------
+> *   X. ÉTIQUETAGE DES VARIABLES ET DES MODALITÉS
+> *-----------------------------------------------------------------------*/
+. 
+. use "enfants_work.dta", clear
+
+. 
+. label variable id       "Identifiant de l'enfant"
+
+. label variable etat     "État de l'enfant à la sortie (1=Décédé, 0=Vivant)"
+
+. label variable pbr      "Périmètre brachial (en mm)"
+
+. label variable age      "Âge à l'admission (en mois)"
+
+. label variable durhosp  "Albumine sérique (en g/L)"
+
+. label variable sitmatm  "Situation matrimoniale de la mère"
+
+. label variable sexe     "Sexe de l'enfant"
+
+. label variable etum     "Niveau d'étude de la mère"
+
+. label variable oed      "Situation des œdèmes"
+
+. label variable rang     "Rang de l'enfant dans la fratrie"
+
+. label variable diar     "Diarrhée à l'admission"
+
+. label variable peau     "Pli cutané sous-scapulaire à l'admission"
+
+. label variable mala     "Paludisme à l'admission"
+
+. label variable v18      "Classification de Waterlow (risque d'escarre)"
+
+. 
+. capture label drop etat_lbl
+
+. label define etat_lbl 0 "Vivant" 1 "Décédé"
+
+. label values etat etat_lbl
+
+. 
+. capture label drop sexe_lbl
+
+. label define sexe_lbl 1 "Garçon" 2 "Fille"
+
+. label values sexe sexe_lbl
+
+. 
+. capture label drop sitmatm_lbl
+
+. label define sitmatm_lbl 0 "Célibataire" 1 "Mariée" 2 "Polygamie" 3 "Veuve/Veuf"
+
+. label values sitmatm sitmatm_lbl
+
+. 
+. capture label drop etum_lbl
+
+. label define etum_lbl 0 "Pas d'étude" 1 "Primaires" 2 "Secondaires et plus"
+
+. label values etum etum_lbl
+
+. 
+. capture label drop oed_lbl
+
+. label define oed_lbl 0 "Absence" 1 "Présence"
+
+. label values oed oed_lbl
+
+. 
+. capture label drop diar_lbl
+
+. label define diar_lbl 0 "Non" 1 "Oui"
+
+. label values diar diar_lbl
+
+. 
+. capture label drop peau_lbl
+
+. label define peau_lbl 0 "Non" 1 "Oui"
+
+. label values peau peau_lbl
+
+. 
+. capture label drop mala_lbl
+
+. label define mala_lbl 0 "Non" 1 "Oui"
+
+. label values mala mala_lbl
+
+. 
+. capture label drop v18_lbl
+
+. label define v18_lbl 0 "Enfant à risque" 1 "Enfant à haut risque" 2 "Enfant à très haut risque"
+
+. label values v18 v18_lbl
+
+. 
+. save "enfants_work.dta", replace
+file enfants_work.dta saved
+
+. 
+. 
+. /*------------------------------------
+> *   XI. CATÉGORISATIONS
+> ------------------------------------*/
+. 
+. use "enfants_work.dta", clear
+
+. 
+. * Albumine sérique recodée en trois catégories
+. recode durhosp                          ///
+>     (4/22.99  = 0)                    ///
+>     (23/29.99 = 1)                    ///
+>     (30/55    = 2)
+(1129 changes made to durhosp)
+
+. 
+. label define durhosp_lbl 0 "< 23 g/L" 1 "23-29.99 g/L" 2 "≥ 30 g/L", replace
+
+. label values durhosp durhosp_lbl
+
+. label variable durhosp "Albumine sérique catégorisée (g/L)"
+
+. tab durhosp
+
+    Albumine |
+     sérique |
+  catégorisé |
+     e (g/L) |      Freq.     Percent        Cum.
+-------------+-----------------------------------
+    < 23 g/L |        472       41.81       41.81
+23-29.99 g/L |        414       36.67       78.48
+    ≥ 30 g/L |        243       21.52      100.00
+-------------+-----------------------------------
+       Total |      1,129      100.00
+
+. 
+. * Périmètre brachial recodé en trois catégories
+. recode pbr                               ///
+>     (70/124.99  = 1)                   ///
+>     (125/134.99 = 2)                   ///
+>     (135/252    = 3)
+(1129 changes made to pbr)
+
+. 
+. label define pbr_lbl 1 "< 125 mm" 2 "125-134 mm" 3 "≥ 135 mm", replace
+
+. label values pbr pbr_lbl
+
+. label variable pbr "Périmètre brachial catégorisé (mm)"
+
+. tab pbr
+
+  Périmètre |
+   brachial |
+  catégoris |
+     é (mm) |      Freq.     Percent        Cum.
+------------+-----------------------------------
+   < 125 mm |        338       29.94       29.94
+ 125-134 mm |        286       25.33       55.27
+   ≥ 135 mm |        505       44.73      100.00
+------------+-----------------------------------
+      Total |      1,129      100.00
+
+. 
+. * Rang dans la fratrie recodé en trois catégories
+. recode rang                              ///
+>     (1/2  = 1)                         ///
+>     (3/4  = 2)                         ///
+>     (5/17 = 3)
+(954 changes made to rang)
+
+. 
+. label define rang_lbl 1 "Rang 1-2" 2 "Rang 3-4" 3 "Rang 5+", replace
+
+. label values rang rang_lbl
+
+. label variable rang "Rang catégorisé dans la fratrie"
+
+. tab rang
+
+       Rang |
+  catégoris |
+  é dans la |
+    fratrie |      Freq.     Percent        Cum.
+------------+-----------------------------------
+   Rang 1-2 |        324       28.70       28.70
+   Rang 3-4 |        364       32.24       60.94
+    Rang 5+ |        441       39.06      100.00
+------------+-----------------------------------
+      Total |      1,129      100.00
+
+. 
+. /*-----------------------------------------------------------------------
+> *   XII. VÉRIFICATION ET SAUVEGARDE DE LA BASE APURÉE
+> *-----------------------------------------------------------------------*/
+. 
+. drop id
+
+. 
+. describe
+
+Contains data from enfants_work.dta
+ Observations:         1,129                  
+    Variables:            13                  18 Jun 2026 14:00
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+sexe            byte    %10.0g     sexe_lbl   Sexe de l'enfant
+etum            byte    %19.0g     etum_lbl   Niveau d'étude de la mère
+rang            byte    %10.0g     rang_lbl   Rang catégorisé dans la fratrie
+sitmatm         byte    %12.0g     sitmatm_lbl
+                                              Situation matrimoniale de la mère
+oed             byte    %10.0g     oed_lbl    Situation des œdèmes
+diar            byte    %10.0g     diar_lbl   Diarrhée à l'admission
+peau            byte    %10.0g     peau_lbl   Pli cutané sous-scapulaire à l'admission
+mala            byte    %10.0g     mala_lbl   Paludisme à l'admission
+durhosp         double  %12.0g     durhosp_lbl
+                                              Albumine sérique catégorisée (g/L)
+v18             byte    %27.0g     v18_lbl    Classification de Waterlow (risque d'escarre)
+pbr             int     %10.0g     pbr_lbl    Périmètre brachial catégorisé (mm)
+age             int     %10.0g                Âge à l'admission (en mois)
+etat            float   %9.0g      etat_lbl   État de l'enfant à la sortie (1=Décédé, 0=Vivant)
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Sorted by: 
+     Note: Dataset has changed since last saved.
+
+. sum
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+        sexe |      1,129    1.494243    .5001884          1          2
+        etum |      1,129    .5252436    .7761577          0          2
+        rang |      1,129    2.103632    .8169715          1          3
+     sitmatm |      1,129     1.20992     1.29622          0          3
+         oed |      1,129    .2887511    .4533828          0          1
+-------------+---------------------------------------------------------
+        diar |      1,129    .3542958    .4785113          0          1
+        peau |      1,129    .1133747    .3171907          0          1
+        mala |      1,129    .2648361    .4414415          0          1
+     durhosp |      1,129    .7971656    .7698617          0          2
+         v18 |      1,129    .2949513    .4600929          0          2
+-------------+---------------------------------------------------------
+         pbr |      1,129    2.147919    .8517283          1          3
+         age |      1,129    41.46324    40.80088          0        199
+        etat |      1,129    .1753764    .3804573          0          1
+
+. misstable summarize
+(variables nonmissing or string)
+
+. 
+. save "Bas_apuree.dta", replace
+(file Bas_apuree.dta not found)
+file Bas_apuree.dta saved
+
+. 
+. di "Base apurée sauvegardée : " _N " observations, " c(k) " variables"
+Base apurée sauvegardée : 1129 observations, 13 variables
+
+. 
+. log close
+      name:  <unnamed>
+       log:  <dossier de travail>\datacleaning_stata1.log
+  log type:  text
+ closed on:  18 Jun 2026, 14:00:04
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

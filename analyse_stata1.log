@@ -1,0 +1,2174 @@
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  <dossier de travail>\analyse_stata1.lo
+> g
+  log type:  text
+ opened on:  18 Jun 2026, 18:49:34
+
+. 
+. global c1  "26 82 118"
+
+. global c2  "52 143 165"
+
+. global c3  "196 110 55"
+
+. global c4  "108 117 125"
+
+. 
+. set scheme s1color
+
+. 
+. 
+. /*-----------------------------------------------------------------------
+> *   II. CHARGEMENT DE LA BASE ET PRÉPARATION ANALYTIQUE
+> *-----------------------------------------------------------------------*/
+. 
+. use "Bas_apuree.dta", clear
+
+. 
+. gen v18_2cat = (v18 >= 1)
+
+. label define v18_2cat_lbl 0 "À risque" 1 "Haut / très haut risque"
+
+. label values v18_2cat v18_2cat_lbl
+
+. label variable v18_2cat "Risque d'escarre (recodé en 2 catégories)"
+
+. 
+. di "Base chargée – " _N " observations, " c(k) " variables"
+Base chargée – 1129 observations, 14 variables
+
+. 
+. 
+. /*=======================================================================
+> *   III. ANALYSE DESCRIPTIVE
+> *=======================================================================*/
+. 
+. /*-----------------------------------------------------------------------
+> *   3.1 Variable dépendante
+> *-----------------------------------------------------------------------*/
+. 
+. tab etat
+
+    État de |
+ l'enfant à |
+  la sortie |
+   (1=Décéd |
+         é, |
+  0=Vivant) |      Freq.     Percent        Cum.
+------------+-----------------------------------
+     Vivant |        931       82.46       82.46
+     Décédé |        198       17.54      100.00
+------------+-----------------------------------
+      Total |      1,129      100.00
+
+. 
+. graph bar (percent), over(etat, label(labsize(medium)))                ///
+>     bar(1, color("$c2")) bar(2, color("$c3"))                          ///
+>     blabel(bar, format(%5.1f) size(small) color(white))                ///
+>     ytitle("Pourcentage (%)", size(medium))                            ///
+>     title("Répartition des enfants selon leur état à la sortie",       ///
+>           size(medium))                                                ///
+>     subtitle("Hôpital de Lwiro, 1986-1988", size(small))              ///
+>     graphregion(color(white)) bgcolor(white)
+
+. graph export "Graphiques\etat_enfant.png", replace width(1200)
+(file Graphiques\etat_enfant.png not found)
+file Graphiques\etat_enfant.png saved as PNG format
+
+. 
+. 
+. /*-----------------------------------------------------------------------
+> *   3.2 Variables qualitatives
+> *-----------------------------------------------------------------------*/
+. 
+. * ── Sexe ─────────────────────────────────────────────────────────────
+. tab sexe
+
+    Sexe de |
+   l'enfant |      Freq.     Percent        Cum.
+------------+-----------------------------------
+     Garçon |        571       50.58       50.58
+      Fille |        558       49.42      100.00
+------------+-----------------------------------
+      Total |      1,129      100.00
+
+. graph pie, over(sexe)                                                  ///
+>     plabel(_all percent, size(medium) color(white) format(%5.1f))      ///
+>     pie(1, color("$c1")) pie(2, color("$c2"))                          ///
+>     title("Répartition par sexe", size(medium))                        ///
+>     legend(size(small)) graphregion(color(white))
+
+. graph export "Graphiques\sexe.png", replace width(1000)
+(file Graphiques\sexe.png not found)
+file Graphiques\sexe.png saved as PNG format
+
+. 
+. 
+. * ── Niveau d'étude de la mère ────────────────────────────────────────
+. tab etum
+
+  Niveau d'étude de |
+            la mère |      Freq.     Percent        Cum.
+--------------------+-----------------------------------
+        Pas d'étude |        735       65.10       65.10
+          Primaires |        195       17.27       82.37
+Secondaires et plus |        199       17.63      100.00
+--------------------+-----------------------------------
+              Total |      1,129      100.00
+
+. graph hbar (percent), over(etum, sort(1) descending                    ///
+>     label(labsize(small)))                                             ///
+>     bar(1, color("$c1"))                                               ///
+>     blabel(bar, format(%5.1f) size(small) color(white))                ///
+>     ytitle("Pourcentage (%)", size(medium))                            ///
+>     title("Niveau d'étude de la mère", size(medium))                   ///
+>     subtitle("Hôpital de Lwiro, 1986-1988", size(small))              ///
+>     graphregion(color(white)) bgcolor(white)
+
+. graph export "Graphiques\niveau_etude_mere.png", replace width(1200)
+(file Graphiques\niveau_etude_mere.png not found)
+file Graphiques\niveau_etude_mere.png saved as PNG format
+
+. 
+. 
+. * ── Situation matrimoniale de la mère ────────────────────────────────
+. tab sitmatm
+
+  Situation |
+matrimonial |
+    e de la |
+       mère |      Freq.     Percent        Cum.
+------------+-----------------------------------
+Célibataire |        531       47.03       47.03
+     Mariée |        153       13.55       60.58
+  Polygamie |        122       10.81       71.39
+ Veuve/Veuf |        323       28.61      100.00
+------------+-----------------------------------
+      Total |      1,129      100.00
+
+. graph hbar (percent), over(sitmatm, sort(1) descending                 ///
+>     label(labsize(small)))                                             ///
+>     bar(1, color("$c2"))                                               ///
+>     blabel(bar, format(%5.1f) size(small) color(white))                ///
+>     ytitle("Pourcentage (%)", size(medium))                            ///
+>     title("Situation matrimoniale de la mère", size(medium))           ///
+>     subtitle("Hôpital de Lwiro, 1986-1988", size(small))              ///
+>     graphregion(color(white)) bgcolor(white)
+
+. graph export "Graphiques\situation_matrimoniale.png", replace width(1200)
+(file Graphiques\situation_matrimoniale.png not found)
+file Graphiques\situation_matrimoniale.png saved as PNG format
+
+. 
+. 
+. * ── Rang dans la fratrie (catégorisé) ────────────────────────────────
+. tab rang
+
+       Rang |
+  catégoris |
+  é dans la |
+    fratrie |      Freq.     Percent        Cum.
+------------+-----------------------------------
+   Rang 1-2 |        324       28.70       28.70
+   Rang 3-4 |        364       32.24       60.94
+    Rang 5+ |        441       39.06      100.00
+------------+-----------------------------------
+      Total |      1,129      100.00
+
+. graph pie, over(rang)                                                  ///
+>     plabel(_all percent, size(medium) color(white) format(%5.1f))      ///
+>     pie(1, color("$c1")) pie(2, color("$c2")) pie(3, color("$c3"))     ///
+>     title("Catégories de rang dans la fratrie", size(medium))          ///
+>     legend(size(small)) graphregion(color(white))
+
+. graph export "Graphiques\rang_naissance.png", replace width(1000)
+(file Graphiques\rang_naissance.png not found)
+file Graphiques\rang_naissance.png saved as PNG format
+
+. 
+. 
+. * ── Œdèmes ───────────────────────────────────────────────────────────
+. tab oed
+
+  Situation |
+        des |
+     œdèmes |      Freq.     Percent        Cum.
+------------+-----------------------------------
+    Absence |        803       71.12       71.12
+   Présence |        326       28.88      100.00
+------------+-----------------------------------
+      Total |      1,129      100.00
+
+. graph pie, over(oed)                                                   ///
+>     plabel(_all percent, size(medium) color(white) format(%5.1f))      ///
+>     pie(1, color("$c1")) pie(2, color("$c3"))                          ///
+>     title("Situation des œdèmes", size(medium))                        ///
+>     legend(size(small)) graphregion(color(white))
+
+. graph export "Graphiques\oedemes.png", replace width(1000)
+(file Graphiques\oedemes.png not found)
+file Graphiques\oedemes.png saved as PNG format
+
+. 
+. 
+. * ── Diarrhée ─────────────────────────────────────────────────────────
+. tab diar
+
+   Diarrhée |
+          à |
+l'admission |      Freq.     Percent        Cum.
+------------+-----------------------------------
+        Non |        729       64.57       64.57
+        Oui |        400       35.43      100.00
+------------+-----------------------------------
+      Total |      1,129      100.00
+
+. graph pie, over(diar)                                                  ///
+>     plabel(_all percent, size(medium) color(white) format(%5.1f))      ///
+>     pie(1, color("$c1")) pie(2, color("$c3"))                          ///
+>     title("Prévalence de la diarrhée à l'admission", size(medium))     ///
+>     legend(size(small)) graphregion(color(white))
+
+. graph export "Graphiques\diarrhee.png", replace width(1000)
+(file Graphiques\diarrhee.png not found)
+file Graphiques\diarrhee.png saved as PNG format
+
+. 
+. 
+. * ── Pli cutané ───────────────────────────────────────────────────────
+. tab peau
+
+ Pli cutané |
+sous-scapul |
+     aire à |
+l'admission |      Freq.     Percent        Cum.
+------------+-----------------------------------
+        Non |      1,001       88.66       88.66
+        Oui |        128       11.34      100.00
+------------+-----------------------------------
+      Total |      1,129      100.00
+
+. graph bar (percent), over(peau, label(labsize(medium)))                ///
+>     bar(1, color("$c1"))                                               ///
+>     blabel(bar, format(%5.1f) size(small) color(white))                ///
+>     ytitle("Pourcentage (%)", size(medium))                            ///
+>     title("Pli cutané sous-scapulaire à l'admission", size(medium))    ///
+>     graphregion(color(white)) bgcolor(white)
+
+. graph export "Graphiques\pli_cutane.png", replace width(1200)
+(file Graphiques\pli_cutane.png not found)
+file Graphiques\pli_cutane.png saved as PNG format
+
+. 
+. 
+. * ── Paludisme ────────────────────────────────────────────────────────
+. tab mala
+
+  Paludisme |
+          à |
+l'admission |      Freq.     Percent        Cum.
+------------+-----------------------------------
+        Non |        830       73.52       73.52
+        Oui |        299       26.48      100.00
+------------+-----------------------------------
+      Total |      1,129      100.00
+
+. graph pie, over(mala)                                                  ///
+>     plabel(_all percent, size(medium) color(white) format(%5.1f))      ///
+>     pie(1, color("$c1")) pie(2, color("$c3"))                          ///
+>     title("Prévalence du paludisme à l'admission", size(medium))       ///
+>     legend(size(small)) graphregion(color(white))
+
+. graph export "Graphiques\paludisme.png", replace width(1000)
+(file Graphiques\paludisme.png not found)
+file Graphiques\paludisme.png saved as PNG format
+
+. 
+. 
+. * ── Classification de Waterlow ───────────────────────────────────────
+. tab v18
+
+        Classification de |
+         Waterlow (risque |
+               d'escarre) |      Freq.     Percent        Cum.
+--------------------------+-----------------------------------
+          Enfant à risque |        798       70.68       70.68
+     Enfant à haut risque |        329       29.14       99.82
+Enfant à très haut risque |          2        0.18      100.00
+--------------------------+-----------------------------------
+                    Total |      1,129      100.00
+
+. graph hbar (count), over(v18, label(labsize(small)))                   ///
+>     bar(1, color("$c2"))                                               ///
+>     blabel(bar, size(small) color(white))                              ///
+>     ytitle("Nombre d'enfants", size(medium))                           ///
+>     title("Classification de Waterlow du risque d'escarre",            ///
+>           size(medium))                                                ///
+>     subtitle("Hôpital de Lwiro, 1986-1988", size(small))              ///
+>     graphregion(color(white)) bgcolor(white)
+
+. graph export "Graphiques\waterlow.png", replace width(1200)
+(file Graphiques\waterlow.png not found)
+file Graphiques\waterlow.png saved as PNG format
+
+. 
+. 
+. * ── Albumine sérique (catégorisée) ───────────────────────────────────
+. tab durhosp
+
+    Albumine |
+     sérique |
+  catégorisé |
+     e (g/L) |      Freq.     Percent        Cum.
+-------------+-----------------------------------
+    < 23 g/L |        472       41.81       41.81
+23-29.99 g/L |        414       36.67       78.48
+    ≥ 30 g/L |        243       21.52      100.00
+-------------+-----------------------------------
+       Total |      1,129      100.00
+
+. graph bar (percent), over(durhosp, label(labsize(small)))              ///
+>     bar(1, color("$c1"))                                               ///
+>     blabel(bar, format(%5.1f) size(small) color(white))                ///
+>     ytitle("Pourcentage (%)", size(medium))                            ///
+>     title("Répartition selon le niveau d'albumine sérique",            ///
+>           size(medium))                                                ///
+>     graphregion(color(white)) bgcolor(white)
+
+. graph export "Graphiques\albumine_categories.png", replace width(1200)
+(file Graphiques\albumine_categories.png not found)
+file Graphiques\albumine_categories.png saved as PNG format
+
+. 
+. 
+. * ── Périmètre brachial (catégorisé) ──────────────────────────────────
+. tab pbr
+
+  Périmètre |
+   brachial |
+  catégoris |
+     é (mm) |      Freq.     Percent        Cum.
+------------+-----------------------------------
+   < 125 mm |        338       29.94       29.94
+ 125-134 mm |        286       25.33       55.27
+   ≥ 135 mm |        505       44.73      100.00
+------------+-----------------------------------
+      Total |      1,129      100.00
+
+. graph bar (percent), over(pbr, label(labsize(small)))                  ///
+>     bar(1, color("$c2"))                                               ///
+>     blabel(bar, format(%5.1f) size(small) color(white))                ///
+>     ytitle("Pourcentage (%)", size(medium))                            ///
+>     title("Répartition selon le périmètre brachial", size(medium))     ///
+>     graphregion(color(white)) bgcolor(white)
+
+. graph export "Graphiques\pbr_categories.png", replace width(1200)
+(file Graphiques\pbr_categories.png not found)
+file Graphiques\pbr_categories.png saved as PNG format
+
+. 
+. 
+. /*-----------------------------------------------------------------------
+> *   3.3 Variable quantitative continue
+> *
+> *   Seul l'âge à l'admission demeure continu dans la base apurée :
+> *   durhosp, pbr et rang ont été recodées en catégories (cf. 3.2) et
+> *   sont désormais traitées comme des variables qualitatives ordinales.
+> *-----------------------------------------------------------------------*/
+. 
+. tabstat age, stat(n mean sd median p25 p75 min max skewness kurtosis) col(stat)
+
+    Variable |         N      Mean        SD       p50       p25       p75       Min       Max  Skewness  Kurtosis
+-------------+----------------------------------------------------------------------------------------------------
+         age |      1129  41.46324  40.80088        28        11        59         0       199  1.423294  4.545195
+------------------------------------------------------------------------------------------------------------------
+
+. 
+. histogram age, freq normal                                             ///
+>     fcolor("$c1"%70) lcolor(white)                                     ///
+>     title("Distribution de l'âge à l'admission", size(medium))        ///
+>     xtitle("Âge (mois)") ytitle("Fréquence")                          ///
+>     graphregion(color(white)) bgcolor(white)
+(bin=30, start=0, width=6.6333333)
+
+. graph export "Graphiques\hist_age.png", replace width(1200)
+(file Graphiques\hist_age.png not found)
+file Graphiques\hist_age.png saved as PNG format
+
+. 
+. graph box age, over(etat)                                              ///
+>     box(1, color("$c2")) box(2, color("$c3"))                          ///
+>     marker(1, mcolor("$c2") msymbol(circle_hollow))                   ///
+>     marker(2, mcolor("$c3") msymbol(circle_hollow))                   ///
+>     title("Âge selon l'état à la sortie", size(medium))               ///
+>     ytitle("Âge (mois)") graphregion(color(white)) bgcolor(white)
+
+. graph export "Graphiques\boxplot_age_etat.png", replace width(1200)
+(file Graphiques\boxplot_age_etat.png not found)
+file Graphiques\boxplot_age_etat.png saved as PNG format
+
+. 
+. * ─3.4─ Taux de mortalité selon les catégories nutritionnelles et de rang ──
+. 
+. gen etat_pct = etat * 100
+
+. label variable etat_pct "Taux de mortalité (%)"
+
+. 
+. * Albumine sérique catégorisée
+. graph bar (mean) etat_pct, over(durhosp, label(labsize(small)))        ///
+>     bar(1, color("$c3"))                                               ///
+>     blabel(bar, format(%4.1f) size(small) color(white))                ///
+>     ytitle("Taux de mortalité (%)", size(medium))                      ///
+>     title("Mortalité selon le niveau d'albumine sérique", size(medium)) ///
+>     graphregion(color(white)) bgcolor(white)
+
+. graph export "Graphiques\mortalite_durhosp.png", replace width(1200)
+(file Graphiques\mortalite_durhosp.png not found)
+file Graphiques\mortalite_durhosp.png saved as PNG format
+
+. 
+. * Périmètre brachial catégorisé
+. graph bar (mean) etat_pct, over(pbr, label(labsize(small)))            ///
+>     bar(1, color("$c3"))                                               ///
+>     blabel(bar, format(%4.1f) size(small) color(white))                ///
+>     ytitle("Taux de mortalité (%)", size(medium))                      ///
+>     title("Mortalité selon le périmètre brachial", size(medium))       ///
+>     graphregion(color(white)) bgcolor(white)
+
+. graph export "Graphiques\mortalite_pbr.png", replace width(1200)
+(file Graphiques\mortalite_pbr.png not found)
+file Graphiques\mortalite_pbr.png saved as PNG format
+
+. 
+. * Rang dans la fratrie catégorisé
+. graph bar (mean) etat_pct, over(rang, label(labsize(small)))           ///
+>     bar(1, color("$c3"))                                               ///
+>     blabel(bar, format(%4.1f) size(small) color(white))                ///
+>     ytitle("Taux de mortalité (%)", size(medium))                      ///
+>     title("Mortalité selon le rang dans la fratrie", size(medium))     ///
+>     graphregion(color(white)) bgcolor(white)
+
+. graph export "Graphiques\mortalite_rang.png", replace width(1200)
+(file Graphiques\mortalite_rang.png not found)
+file Graphiques\mortalite_rang.png saved as PNG format
+
+. 
+. 
+. /*=======================================================================
+> *   IV. ANALYSE INFÉRENTIELLE
+> *=======================================================================*/
+. 
+. /*-----------------------------------------------------------------------
+> *   4.1 Proportion d'enfants décédés et intervalle de confiance à 95 %
+> *-----------------------------------------------------------------------*/
+. 
+. di _newline "=== PROPORTION D'ENFANTS DÉCÉDÉS ==="
+
+=== PROPORTION D'ENFANTS DÉCÉDÉS ===
+
+. proportion etat, level(95)
+
+Proportion estimation                    Number of obs = 1,129
+
+--------------------------------------------------------------
+             |                                   Logit
+             | Proportion   Std. err.     [95% conf. interval]
+-------------+------------------------------------------------
+        etat |
+     Vivant  |   .8246236   .0113179      .8013002    .8457362
+     Décédé  |   .1753764   .0113179      .1542638    .1986998
+--------------------------------------------------------------
+
+. ci proportions etat, wilson level(95)
+
+                                                                Wilson       
+    Variable |        Obs  Proportion    Std. err.       [95% conf. interval]
+-------------+---------------------------------------------------------------
+        etat |      1,129    .1753764    .0113179        .1543048    .1986496
+
+. 
+. 
+. /*-----------------------------------------------------------------------
+> *   4.2 Corrélations entre l'âge et les indicateurs ordinaux
+> *
+> *   durhosp, pbr et rang étant désormais catégorielles ordinales, la
+> *   corrélation de Pearson n'est plus appropriée : elle est remplacée
+> *   par la corrélation de rang de Spearman.
+> *-----------------------------------------------------------------------*/
+. 
+. di _newline "=== MATRICE DE CORRÉLATION DE SPEARMAN ==="
+
+=== MATRICE DE CORRÉLATION DE SPEARMAN ===
+
+. spearman age durhosp pbr rang, stats(rho p) star(0.05)
+(obs=1129)
+
++-----------------+
+|  Key            |
+|-----------------|
+|   rho           |
+|   Sig. level    |
++-----------------+
+
+             |      age  durhosp      pbr     rang
+-------------+------------------------------------
+         age |   1.0000 
+             | 
+             |
+     durhosp |  -0.2639*  1.0000 
+             |   0.0000 
+             |
+         pbr |   0.3573*  0.0812*  1.0000 
+             |   0.0000   0.0064 
+             |
+        rang |  -0.0006   0.0300  -0.0624*  1.0000 
+             |   0.9839   0.3132   0.0361 
+             |
+
+. 
+. 
+. /*-----------------------------------------------------------------------
+> *   4.3 Associations entre les indicateurs de l'état nutritionnel
+> *
+> *   pbr étant désormais catégorielle, ses associations avec les autres
+> *   indicateurs qualitatifs sont testées par chi2 / V de Cramér plutôt
+> *   que par Mann-Whitney.
+> *-----------------------------------------------------------------------*/
+. 
+. di _newline "--- pbr × oed ---"
+
+--- pbr × oed ---
+
+. tabulate pbr oed, chi2 V expected
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+  Périmètr |
+e brachial |     Situation des
+ catégoris |        œdèmes
+    é (mm) |   Absence   Présence |     Total
+-----------+----------------------+----------
+  < 125 mm |       233        105 |       338 
+           |     240.4       97.6 |     338.0 
+-----------+----------------------+----------
+125-134 mm |       210         76 |       286 
+           |     203.4       82.6 |     286.0 
+-----------+----------------------+----------
+  ≥ 135 mm |       360        145 |       505 
+           |     359.2      145.8 |     505.0 
+-----------+----------------------+----------
+     Total |       803        326 |     1,129 
+           |     803.0      326.0 |   1,129.0 
+
+          Pearson chi2(2) =   1.5335   Pr = 0.465
+               Cramér's V =   0.0369
+
+. 
+. di _newline "--- pbr × peau ---"
+
+--- pbr × peau ---
+
+. tabulate pbr peau, chi2 V expected
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+  Périmètr |      Pli cutané
+e brachial |   sous-scapulaire à
+ catégoris |      l'admission
+    é (mm) |       Non        Oui |     Total
+-----------+----------------------+----------
+  < 125 mm |       285         53 |       338 
+           |     299.7       38.3 |     338.0 
+-----------+----------------------+----------
+125-134 mm |       259         27 |       286 
+           |     253.6       32.4 |     286.0 
+-----------+----------------------+----------
+  ≥ 135 mm |       457         48 |       505 
+           |     447.7       57.3 |     505.0 
+-----------+----------------------+----------
+     Total |     1,001        128 |     1,129 
+           |   1,001.0      128.0 |   1,129.0 
+
+          Pearson chi2(2) =   9.0531   Pr = 0.011
+               Cramér's V =   0.0895
+
+. 
+. di _newline "--- pbr × v18_2cat ---"
+
+--- pbr × v18_2cat ---
+
+. tabulate pbr v18_2cat, chi2 V expected
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+  Périmètr |   Risque d'escarre
+e brachial |     (recodé en 2
+ catégoris |      catégories)
+    é (mm) |  À risque  Haut / tr |     Total
+-----------+----------------------+----------
+  < 125 mm |       270         68 |       338 
+           |     238.9       99.1 |     338.0 
+-----------+----------------------+----------
+125-134 mm |       194         92 |       286 
+           |     202.2       83.8 |     286.0 
+-----------+----------------------+----------
+  ≥ 135 mm |       334        171 |       505 
+           |     356.9      148.1 |     505.0 
+-----------+----------------------+----------
+     Total |       798        331 |     1,129 
+           |     798.0      331.0 |   1,129.0 
+
+          Pearson chi2(2) =  19.9557   Pr = 0.000
+               Cramér's V =   0.1329
+
+. 
+. di _newline "--- oed × peau ---"
+
+--- oed × peau ---
+
+. tabulate oed peau, chi2 V expected
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+           |      Pli cutané
+ Situation |   sous-scapulaire à
+       des |      l'admission
+    œdèmes |       Non        Oui |     Total
+-----------+----------------------+----------
+   Absence |       746         57 |       803 
+           |     712.0       91.0 |     803.0 
+-----------+----------------------+----------
+  Présence |       255         71 |       326 
+           |     289.0       37.0 |     326.0 
+-----------+----------------------+----------
+     Total |     1,001        128 |     1,129 
+           |   1,001.0      128.0 |   1,129.0 
+
+          Pearson chi2(1) =  49.7142   Pr = 0.000
+               Cramér's V =   0.2098
+
+. 
+. di _newline "--- oed × v18_2cat ---"
+
+--- oed × v18_2cat ---
+
+. tabulate oed v18_2cat, chi2 V expected
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+           |   Risque d'escarre
+ Situation |     (recodé en 2
+       des |      catégories)
+    œdèmes |  À risque  Haut / tr |     Total
+-----------+----------------------+----------
+   Absence |       530        273 |       803 
+           |     567.6      235.4 |     803.0 
+-----------+----------------------+----------
+  Présence |       268         58 |       326 
+           |     230.4       95.6 |     326.0 
+-----------+----------------------+----------
+     Total |       798        331 |     1,129 
+           |     798.0      331.0 |   1,129.0 
+
+          Pearson chi2(1) =  29.3869   Pr = 0.000
+               Cramér's V =  -0.1613
+
+. 
+. di _newline "--- peau × v18_2cat ---"
+
+--- peau × v18_2cat ---
+
+. tabulate peau v18_2cat, chi2 V expected
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+       Pli |
+    cutané |
+sous-scapu |   Risque d'escarre
+   laire à |     (recodé en 2
+l'admissio |      catégories)
+         n |  À risque  Haut / tr |     Total
+-----------+----------------------+----------
+       Non |       693        308 |     1,001 
+           |     707.5      293.5 |   1,001.0 
+-----------+----------------------+----------
+       Oui |       105         23 |       128 
+           |      90.5       37.5 |     128.0 
+-----------+----------------------+----------
+     Total |       798        331 |     1,129 
+           |     798.0      331.0 |   1,129.0 
+
+          Pearson chi2(1) =   8.9735   Pr = 0.003
+               Cramér's V =  -0.0892
+
+. 
+. 
+. /*-----------------------------------------------------------------------
+> *   4.4 Relation entre le rang de naissance et le paludisme
+> *-----------------------------------------------------------------------*/
+. 
+. di _newline "=== RANG × MALA ==="
+
+=== RANG × MALA ===
+
+. tabulate rang mala, chi2 V expected
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+      Rang |
+ catégoris |      Paludisme à
+ é dans la |      l'admission
+   fratrie |       Non        Oui |     Total
+-----------+----------------------+----------
+  Rang 1-2 |       240         84 |       324 
+           |     238.2       85.8 |     324.0 
+-----------+----------------------+----------
+  Rang 3-4 |       281         83 |       364 
+           |     267.6       96.4 |     364.0 
+-----------+----------------------+----------
+   Rang 5+ |       309        132 |       441 
+           |     324.2      116.8 |     441.0 
+-----------+----------------------+----------
+     Total |       830        299 |     1,129 
+           |     830.0      299.0 |   1,129.0 
+
+          Pearson chi2(2) =   5.2789   Pr = 0.071
+               Cramér's V =   0.0684
+
+. 
+. 
+. /*-----------------------------------------------------------------------
+> *   4.5 Association entre l'état à la sortie et chaque prédicteur
+> *-----------------------------------------------------------------------*/
+. 
+. di _newline "========================================================"
+
+========================================================
+
+. di "  TABLEAU SYNTHÉTIQUE : etat x chaque prédicteur       "
+  TABLEAU SYNTHÉTIQUE : etat x chaque prédicteur       
+
+. di "========================================================"
+========================================================
+
+. 
+. foreach var of varlist sexe etum sitmatm rang durhosp pbr              ///
+>                        oed diar peau mala v18_2cat {
+  2.     di _newline "--- `var' x etat ---"
+  3.     tabulate `var' etat, chi2 V expected
+  4. }
+
+--- sexe x etat ---
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+           |  État de l'enfant à
+           |       la sortie
+           |      (1=Décédé,
+   Sexe de |       0=Vivant)
+  l'enfant |    Vivant     Décédé |     Total
+-----------+----------------------+----------
+    Garçon |       479         92 |       571 
+           |     470.9      100.1 |     571.0 
+-----------+----------------------+----------
+     Fille |       452        106 |       558 
+           |     460.1       97.9 |     558.0 
+-----------+----------------------+----------
+     Total |       931        198 |     1,129 
+           |     931.0      198.0 |   1,129.0 
+
+          Pearson chi2(1) =   1.6235   Pr = 0.203
+               Cramér's V =   0.0379
+
+--- etum x etat ---
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+                    |  État de l'enfant à
+                    |       la sortie
+                    |      (1=Décédé,
+  Niveau d'étude de |       0=Vivant)
+            la mère |    Vivant     Décédé |     Total
+--------------------+----------------------+----------
+        Pas d'étude |       593        142 |       735 
+                    |     606.1      128.9 |     735.0 
+--------------------+----------------------+----------
+          Primaires |       165         30 |       195 
+                    |     160.8       34.2 |     195.0 
+--------------------+----------------------+----------
+Secondaires et plus |       173         26 |       199 
+                    |     164.1       34.9 |     199.0 
+--------------------+----------------------+----------
+              Total |       931        198 |     1,129 
+                    |     931.0      198.0 |   1,129.0 
+
+          Pearson chi2(2) =   4.9914   Pr = 0.082
+               Cramér's V =   0.0665
+
+--- sitmatm x etat ---
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+             |  État de l'enfant à
+             |       la sortie
+   Situation |      (1=Décédé,
+matrimoniale |       0=Vivant)
+  de la mère |    Vivant     Décédé |     Total
+-------------+----------------------+----------
+ Célibataire |       476         55 |       531 
+             |     437.9       93.1 |     531.0 
+-------------+----------------------+----------
+      Mariée |       125         28 |       153 
+             |     126.2       26.8 |     153.0 
+-------------+----------------------+----------
+   Polygamie |       108         14 |       122 
+             |     100.6       21.4 |     122.0 
+-------------+----------------------+----------
+  Veuve/Veuf |       222        101 |       323 
+             |     266.4       56.6 |     323.0 
+-------------+----------------------+----------
+       Total |       931        198 |     1,129 
+             |     931.0      198.0 |   1,129.0 
+
+          Pearson chi2(3) =  64.2033   Pr = 0.000
+               Cramér's V =   0.2385
+
+--- rang x etat ---
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+           |  État de l'enfant à
+      Rang |       la sortie
+ catégoris |      (1=Décédé,
+ é dans la |       0=Vivant)
+   fratrie |    Vivant     Décédé |     Total
+-----------+----------------------+----------
+  Rang 1-2 |       270         54 |       324 
+           |     267.2       56.8 |     324.0 
+-----------+----------------------+----------
+  Rang 3-4 |       294         70 |       364 
+           |     300.2       63.8 |     364.0 
+-----------+----------------------+----------
+   Rang 5+ |       367         74 |       441 
+           |     363.7       77.3 |     441.0 
+-----------+----------------------+----------
+     Total |       931        198 |     1,129 
+           |     931.0      198.0 |   1,129.0 
+
+          Pearson chi2(2) =   1.0665   Pr = 0.587
+               Cramér's V =   0.0307
+
+--- durhosp x etat ---
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+             |  État de l'enfant à
+    Albumine |       la sortie
+     sérique |      (1=Décédé,
+  catégorisé |       0=Vivant)
+     e (g/L) |    Vivant     Décédé |     Total
+-------------+----------------------+----------
+    < 23 g/L |       340        132 |       472 
+             |     389.2       82.8 |     472.0 
+-------------+----------------------+----------
+23-29.99 g/L |       360         54 |       414 
+             |     341.4       72.6 |     414.0 
+-------------+----------------------+----------
+    ≥ 30 g/L |       231         12 |       243 
+             |     200.4       42.6 |     243.0 
+-------------+----------------------+----------
+       Total |       931        198 |     1,129 
+             |     931.0      198.0 |   1,129.0 
+
+          Pearson chi2(2) =  67.9493   Pr = 0.000
+               Cramér's V =   0.2453
+
+--- pbr x etat ---
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+           |  État de l'enfant à
+  Périmètr |       la sortie
+e brachial |      (1=Décédé,
+ catégoris |       0=Vivant)
+    é (mm) |    Vivant     Décédé |     Total
+-----------+----------------------+----------
+  < 125 mm |       244         94 |       338 
+           |     278.7       59.3 |     338.0 
+-----------+----------------------+----------
+125-134 mm |       231         55 |       286 
+           |     235.8       50.2 |     286.0 
+-----------+----------------------+----------
+  ≥ 135 mm |       456         49 |       505 
+           |     416.4       88.6 |     505.0 
+-----------+----------------------+----------
+     Total |       931        198 |     1,129 
+           |     931.0      198.0 |   1,129.0 
+
+          Pearson chi2(2) =  46.6663   Pr = 0.000
+               Cramér's V =   0.2033
+
+--- oed x etat ---
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+           |  État de l'enfant à
+           |       la sortie
+ Situation |      (1=Décédé,
+       des |       0=Vivant)
+    œdèmes |    Vivant     Décédé |     Total
+-----------+----------------------+----------
+   Absence |       716         87 |       803 
+           |     662.2      140.8 |     803.0 
+-----------+----------------------+----------
+  Présence |       215        111 |       326 
+           |     268.8       57.2 |     326.0 
+-----------+----------------------+----------
+     Total |       931        198 |     1,129 
+           |     931.0      198.0 |   1,129.0 
+
+          Pearson chi2(1) =  86.4050   Pr = 0.000
+               Cramér's V =   0.2766
+
+--- diar x etat ---
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+           |  État de l'enfant à
+  Diarrhée |       la sortie
+         à |      (1=Décédé,
+l'admissio |       0=Vivant)
+         n |    Vivant     Décédé |     Total
+-----------+----------------------+----------
+       Non |       621        108 |       729 
+           |     601.2      127.8 |     729.0 
+-----------+----------------------+----------
+       Oui |       310         90 |       400 
+           |     329.8       70.2 |     400.0 
+-----------+----------------------+----------
+     Total |       931        198 |     1,129 
+           |     931.0      198.0 |   1,129.0 
+
+          Pearson chi2(1) =  10.5481   Pr = 0.001
+               Cramér's V =   0.0967
+
+--- peau x etat ---
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+       Pli |
+    cutané |  État de l'enfant à
+sous-scapu |       la sortie
+   laire à |      (1=Décédé,
+l'admissio |       0=Vivant)
+         n |    Vivant     Décédé |     Total
+-----------+----------------------+----------
+       Non |       844        157 |     1,001 
+           |     825.4      175.6 |   1,001.0 
+-----------+----------------------+----------
+       Oui |        87         41 |       128 
+           |     105.6       22.4 |     128.0 
+-----------+----------------------+----------
+     Total |       931        198 |     1,129 
+           |     931.0      198.0 |   1,129.0 
+
+          Pearson chi2(1) =  20.9699   Pr = 0.000
+               Cramér's V =   0.1363
+
+--- mala x etat ---
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+           |  État de l'enfant à
+ Paludisme |       la sortie
+         à |      (1=Décédé,
+l'admissio |       0=Vivant)
+         n |    Vivant     Décédé |     Total
+-----------+----------------------+----------
+       Non |       666        164 |       830 
+           |     684.4      145.6 |     830.0 
+-----------+----------------------+----------
+       Oui |       265         34 |       299 
+           |     246.6       52.4 |     299.0 
+-----------+----------------------+----------
+     Total |       931        198 |     1,129 
+           |     931.0      198.0 |   1,129.0 
+
+          Pearson chi2(1) =  10.6936   Pr = 0.001
+               Cramér's V =  -0.0973
+
+--- v18_2cat x etat ---
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+                      |  État de l'enfant à
+                      |       la sortie
+     Risque d'escarre |      (1=Décédé,
+         (recodé en 2 |       0=Vivant)
+          catégories) |    Vivant     Décédé |     Total
+----------------------+----------------------+----------
+             À risque |       638        160 |       798 
+                      |     658.0      140.0 |     798.0 
+----------------------+----------------------+----------
+Haut / très haut risq |       293         38 |       331 
+                      |     273.0       58.0 |     331.0 
+----------------------+----------------------+----------
+                Total |       931        198 |     1,129 
+                      |     931.0      198.0 |   1,129.0 
+
+          Pearson chi2(1) =  11.8809   Pr = 0.001
+               Cramér's V =  -0.1026
+
+. 
+. di _newline "--- age x etat ---"
+
+--- age x etat ---
+
+. quietly swilk age
+
+. local p_sw = r(p)
+
+. if `p_sw' >= 0.05 {
+.     di "  Shapiro-Wilk p = " string(`p_sw', "%6.4f") " -> normal -> ANOVA"
+.     anova age etat
+. }
+
+. else {
+.     di "  Shapiro-Wilk p = " string(`p_sw', "%6.4f") " -> non normal -> Mann-Whitney"
+  Shapiro-Wilk p = 0.0000 -> non normal -> Mann-Whitney
+.     ranksum age, by(etat)
+
+Two-sample Wilcoxon rank-sum (Mann–Whitney) test
+
+        etat |      Obs    Rank sum    Expected
+-------------+---------------------------------
+      Vivant |      931      531320      526015
+      Décédé |      198      106565      111870
+-------------+---------------------------------
+    Combined |     1129      637885      637885
+
+Unadjusted variance    17358495
+Adjustment for ties  -4927.5754
+                     ----------
+Adjusted variance      17353567
+
+H0: age(etat==Vivant) = age(etat==Décédé)
+         z =  1.273
+Prob > |z| = 0.2028
+. }
+
+. bysort etat : tabstat age, stat(n mean median sd) col(stat)
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-> etat = Vivant
+
+    Variable |         N      Mean       p50        SD
+-------------+----------------------------------------
+         age |       931  42.79592        28  42.55202
+------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-> etat = Décédé
+
+    Variable |         N      Mean       p50        SD
+-------------+----------------------------------------
+         age |       198  35.19697        28  30.59804
+------------------------------------------------------
+
+. 
+. 
+. /*=======================================================================
+> *   V. ANALYSE RESTREINTE : POPULATION INFANTILE (0-11 MOIS)
+> *
+> *   Conformément à la définition démographique de la mortalité infantile
+> *   (décès survenus avant le premier anniversaire), la modélisation
+> *   explicative est restreinte aux enfants âgés de moins de 12 mois à
+> *   l'admission. L'analyse descriptive globale (sections III et IV)
+> *   portait sur l'ensemble des 1 129 observations ; cette section porte
+> *   exclusivement sur le sous-échantillon des nourrissons.
+> *=======================================================================*/
+. 
+. /*-----------------------------------------------------------------------
+> *   5.1 RECHARGEMENT ET CONSTITUTION DU SOUS-ÉCHANTILLON
+> *-----------------------------------------------------------------------*/
+. 
+. use "Bas_apuree.dta", clear
+
+. 
+. * Recréation de v18_2cat sur le sous-échantillon
+. gen v18_2cat = (v18 >= 1)
+
+. label define v18_2cat_lbl 0 "À risque" 1 "Haut / très haut risque"
+
+. label values v18_2cat v18_2cat_lbl
+
+. label variable v18_2cat "Risque d'escarre (recodé en 2 catégories)"
+
+. 
+. gen etat_pct = etat * 100
+
+. label variable etat_pct "Taux de mortalité (%)"
+
+. 
+. * Application du filtre : nourrissons de 0 à 11 mois révolus
+. keep if age < 12
+(824 observations deleted)
+
+. 
+. di _newline "======================================================"
+
+======================================================
+
+. di "  SOUS-ÉCHANTILLON : NOURRISSONS (0-11 MOIS)          "
+  SOUS-ÉCHANTILLON : NOURRISSONS (0-11 MOIS)          
+
+. di "======================================================"
+======================================================
+
+. di "  Effectif total         : " _N
+  Effectif total         : 305
+
+. count if etat == 1
+  56
+
+. di "  Dont décédés           : " r(N)
+  Dont décédés           : 56
+
+. count if etat == 0
+  249
+
+. di "  Dont vivants           : " r(N)
+  Dont vivants           : 249
+
+. 
+. 
+. /*-----------------------------------------------------------------------
+> *   5.2 TAUX DE MORTALITÉ SPÉCIFIQUE AUX NOURRISSONS
+> *
+> *   Ce taux est à comparer au taux global de 17,5 % obtenu sur
+> *   l'échantillon complet (section 4.1). L'écart éventuel justifie
+> *   le recentrage de la modélisation sur cette sous-population.
+> *-----------------------------------------------------------------------*/
+. 
+. di _newline "=== PROPORTION DE NOURRISSONS DÉCÉDÉS (IC 95 % Wilson) ==="
+
+=== PROPORTION DE NOURRISSONS DÉCÉDÉS (IC 95 % Wilson) ===
+
+. proportion etat, level(95)
+
+Proportion estimation                      Number of obs = 305
+
+--------------------------------------------------------------
+             |                                   Logit
+             | Proportion   Std. err.     [95% conf. interval]
+-------------+------------------------------------------------
+        etat |
+     Vivant  |   .8163934   .0221689      .7687154     .856083
+     Décédé  |   .1836066   .0221689       .143917    .2312846
+--------------------------------------------------------------
+
+. ci proportions etat, wilson level(95)
+
+                                                                Wilson       
+    Variable |        Obs  Proportion    Std. err.       [95% conf. interval]
+-------------+---------------------------------------------------------------
+        etat |        305    .1836066    .0221689        .1441838    .2309001
+
+. 
+. 
+. /*-----------------------------------------------------------------------
+> *   5.3 PROFIL COMPARATIF : NOURRISSONS vs RESTE DE L'ÉCHANTILLON
+> *
+> *   Ce tableau compare les caractéristiques clés entre le sous-groupe
+> *   des nourrissons et l'ensemble de l'échantillon. Il constitue la
+> *   base empirique de la section 3.6 du rapport.
+> *-----------------------------------------------------------------------*/
+. 
+. di _newline "=== PROFIL DESCRIPTIF DES NOURRISSONS ==="
+
+=== PROFIL DESCRIPTIF DES NOURRISSONS ===
+
+. 
+. * Variable dépendante
+. tab etat
+
+    État de |
+ l'enfant à |
+  la sortie |
+   (1=Décéd |
+         é, |
+  0=Vivant) |      Freq.     Percent        Cum.
+------------+-----------------------------------
+     Vivant |        249       81.64       81.64
+     Décédé |         56       18.36      100.00
+------------+-----------------------------------
+      Total |        305      100.00
+
+. 
+. * Caractéristiques socio-démographiques
+. tab sexe
+
+    Sexe de |
+   l'enfant |      Freq.     Percent        Cum.
+------------+-----------------------------------
+     Garçon |        158       51.80       51.80
+      Fille |        147       48.20      100.00
+------------+-----------------------------------
+      Total |        305      100.00
+
+. tab sitmatm
+
+  Situation |
+matrimonial |
+    e de la |
+       mère |      Freq.     Percent        Cum.
+------------+-----------------------------------
+Célibataire |        211       69.18       69.18
+     Mariée |         25        8.20       77.38
+  Polygamie |         24        7.87       85.25
+ Veuve/Veuf |         45       14.75      100.00
+------------+-----------------------------------
+      Total |        305      100.00
+
+. tab etum
+
+  Niveau d'étude de |
+            la mère |      Freq.     Percent        Cum.
+--------------------+-----------------------------------
+        Pas d'étude |        178       58.36       58.36
+          Primaires |         55       18.03       76.39
+Secondaires et plus |         72       23.61      100.00
+--------------------+-----------------------------------
+              Total |        305      100.00
+
+. tab rang
+
+       Rang |
+  catégoris |
+  é dans la |
+    fratrie |      Freq.     Percent        Cum.
+------------+-----------------------------------
+   Rang 1-2 |         90       29.51       29.51
+   Rang 3-4 |         93       30.49       60.00
+    Rang 5+ |        122       40.00      100.00
+------------+-----------------------------------
+      Total |        305      100.00
+
+. 
+. * Variables cliniques et nutritionnelles
+. tab oed
+
+  Situation |
+        des |
+     œdèmes |      Freq.     Percent        Cum.
+------------+-----------------------------------
+    Absence |        283       92.79       92.79
+   Présence |         22        7.21      100.00
+------------+-----------------------------------
+      Total |        305      100.00
+
+. tab diar
+
+   Diarrhée |
+          à |
+l'admission |      Freq.     Percent        Cum.
+------------+-----------------------------------
+        Non |        195       63.93       63.93
+        Oui |        110       36.07      100.00
+------------+-----------------------------------
+      Total |        305      100.00
+
+. tab peau
+
+ Pli cutané |
+sous-scapul |
+     aire à |
+l'admission |      Freq.     Percent        Cum.
+------------+-----------------------------------
+        Non |        275       90.16       90.16
+        Oui |         30        9.84      100.00
+------------+-----------------------------------
+      Total |        305      100.00
+
+. tab mala
+
+  Paludisme |
+          à |
+l'admission |      Freq.     Percent        Cum.
+------------+-----------------------------------
+        Non |        217       71.15       71.15
+        Oui |         88       28.85      100.00
+------------+-----------------------------------
+      Total |        305      100.00
+
+. tab v18
+
+        Classification de |
+         Waterlow (risque |
+               d'escarre) |      Freq.     Percent        Cum.
+--------------------------+-----------------------------------
+          Enfant à risque |        200       65.57       65.57
+     Enfant à haut risque |        105       34.43      100.00
+--------------------------+-----------------------------------
+                    Total |        305      100.00
+
+. tab durhosp
+
+    Albumine |
+     sérique |
+  catégorisé |
+     e (g/L) |      Freq.     Percent        Cum.
+-------------+-----------------------------------
+    < 23 g/L |         53       17.38       17.38
+23-29.99 g/L |        149       48.85       66.23
+    ≥ 30 g/L |        103       33.77      100.00
+-------------+-----------------------------------
+       Total |        305      100.00
+
+. tab pbr
+
+  Périmètre |
+   brachial |
+  catégoris |
+     é (mm) |      Freq.     Percent        Cum.
+------------+-----------------------------------
+   < 125 mm |        140       45.90       45.90
+ 125-134 mm |         93       30.49       76.39
+   ≥ 135 mm |         72       23.61      100.00
+------------+-----------------------------------
+      Total |        305      100.00
+
+. 
+. * Seule variable continue restante
+. tabstat age, stat(n mean sd median p25 p75 min max skewness) col(stat)
+
+    Variable |         N      Mean        SD       p50       p25       p75       Min       Max  Skewness
+-------------+------------------------------------------------------------------------------------------
+         age |       305  5.885246  3.165908         6         4         9         0        11 -.0697334
+--------------------------------------------------------------------------------------------------------
+
+. 
+. 
+. /*-----------------------------------------------------------------------
+> *   5.4 STATISTIQUES DESCRIPTIVES VISUELLES SUR LES NOURRISSONS
+> *-----------------------------------------------------------------------*/
+. 
+. * Distribution de l'âge chez les nourrissons
+. histogram age, freq normal                                             ///
+>     fcolor("$c2"%70) lcolor(white)                                     ///
+>     title("Distribution de l'âge chez les nourrissons", size(medium)) ///
+>     xtitle("Âge (mois)") ytitle("Fréquence")                          ///
+>     graphregion(color(white)) bgcolor(white)
+(bin=17, start=0, width=.64705882)
+
+. graph export "Graphiques\hist_age_nourrissons.png", replace width(1200)
+(file Graphiques\hist_age_nourrissons.png not found)
+file Graphiques\hist_age_nourrissons.png saved as PNG format
+
+. 
+. * Répartition selon l'état à la sortie chez les nourrissons
+. graph bar (percent), over(etat, label(labsize(medium)))                ///
+>     bar(1, color("$c2")) bar(2, color("$c3"))                          ///
+>     blabel(bar, format(%5.1f) size(small) color(white))                ///
+>     ytitle("Pourcentage (%)", size(medium))                            ///
+>     title("État à la sortie — nourrissons (0-11 mois)",                ///
+>           size(medium))                                                ///
+>     subtitle("Hôpital de Lwiro, 1986-1988", size(small))              ///
+>     graphregion(color(white)) bgcolor(white)
+
+. graph export "Graphiques\etat_nourrissons.png", replace width(1200)
+(file Graphiques\etat_nourrissons.png not found)
+file Graphiques\etat_nourrissons.png saved as PNG format
+
+. 
+. * Taux de mortalité selon l'albumine sérique — nourrissons
+. graph bar (mean) etat_pct, over(durhosp, label(labsize(small)))        ///
+>     bar(1, color("$c3"))                                               ///
+>     blabel(bar, format(%4.1f) size(small) color(white))                ///
+>     ytitle("Taux de mortalité (%)", size(medium))                      ///
+>     title("Mortalité selon l'albumine sérique — nourrissons",          ///
+>           size(medium))                                                ///
+>     graphregion(color(white)) bgcolor(white)
+
+. graph export "Graphiques\mortalite_alb_nourr.png", replace width(1200)
+(file Graphiques\mortalite_alb_nourr.png not found)
+file Graphiques\mortalite_alb_nourr.png saved as PNG format
+
+. 
+. * Taux de mortalité selon le PBR — nourrissons
+. graph bar (mean) etat_pct, over(pbr, label(labsize(small)))            ///
+>     bar(1, color("$c3"))                                               ///
+>     blabel(bar, format(%4.1f) size(small) color(white))                ///
+>     ytitle("Taux de mortalité (%)", size(medium))                      ///
+>     title("Mortalité selon le périmètre brachial — nourrissons",       ///
+>           size(medium))                                                ///
+>     graphregion(color(white)) bgcolor(white)
+
+. graph export "Graphiques\mortalite_pbr_nourr.png", replace width(1200)
+(file Graphiques\mortalite_pbr_nourr.png not found)
+file Graphiques\mortalite_pbr_nourr.png saved as PNG format
+
+. 
+. * Taux de mortalité selon les œdèmes — nourrissons
+. graph bar (mean) etat_pct, over(oed, label(labsize(small)))            ///
+>     bar(1, color("$c3"))                                               ///
+>     blabel(bar, format(%4.1f) size(small) color(white))                ///
+>     ytitle("Taux de mortalité (%)", size(medium))                      ///
+>     title("Mortalité selon la présence d'œdèmes — nourrissons",        ///
+>           size(medium))                                                ///
+>     graphregion(color(white)) bgcolor(white)
+
+. graph export "Graphiques\mortalite_oed_nourr.png", replace width(1200)
+(file Graphiques\mortalite_oed_nourr.png not found)
+file Graphiques\mortalite_oed_nourr.png saved as PNG format
+
+. 
+. 
+. /*-----------------------------------------------------------------------
+> *   5.5 ASSOCIATIONS BIVARIÉES SUR LE SOUS-ÉCHANTILLON DES NOURRISSONS
+> *
+> *   Ces tests constituent le tableau synthétique de la section 3.6 du
+> *   rapport, équivalent du Tableau 7 mais restreint aux nourrissons.
+> *   Ils permettent d'identifier les prédicteurs pertinents à introduire
+> *   dans la régression et de vérifier que le sous-échantillon est
+> *   suffisamment riche pour soutenir la modélisation.
+> *-----------------------------------------------------------------------*/
+. 
+. di _newline "======================================================"
+
+======================================================
+
+. di "  ASSOCIATIONS BIVARIÉES — NOURRISSONS (0-11 MOIS)   "
+  ASSOCIATIONS BIVARIÉES — NOURRISSONS (0-11 MOIS)   
+
+. di "======================================================"
+======================================================
+
+. 
+. * Variables qualitatives : chi² et V de Cramér
+. foreach var of varlist sexe etum sitmatm rang durhosp pbr              ///
+>                        oed diar peau mala v18_2cat {
+  2.     di _newline "--- `var' x etat (nourrissons) ---"
+  3.     tabulate `var' etat, chi2 V expected
+  4. }
+
+--- sexe x etat (nourrissons) ---
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+           |  État de l'enfant à
+           |       la sortie
+           |      (1=Décédé,
+   Sexe de |       0=Vivant)
+  l'enfant |    Vivant     Décédé |     Total
+-----------+----------------------+----------
+    Garçon |       130         28 |       158 
+           |     129.0       29.0 |     158.0 
+-----------+----------------------+----------
+     Fille |       119         28 |       147 
+           |     120.0       27.0 |     147.0 
+-----------+----------------------+----------
+     Total |       249         56 |       305 
+           |     249.0       56.0 |     305.0 
+
+          Pearson chi2(1) =   0.0893   Pr = 0.765
+               Cramér's V =   0.0171
+
+--- etum x etat (nourrissons) ---
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+                    |  État de l'enfant à
+                    |       la sortie
+                    |      (1=Décédé,
+  Niveau d'étude de |       0=Vivant)
+            la mère |    Vivant     Décédé |     Total
+--------------------+----------------------+----------
+        Pas d'étude |       138         40 |       178 
+                    |     145.3       32.7 |     178.0 
+--------------------+----------------------+----------
+          Primaires |        48          7 |        55 
+                    |      44.9       10.1 |      55.0 
+--------------------+----------------------+----------
+Secondaires et plus |        63          9 |        72 
+                    |      58.8       13.2 |      72.0 
+--------------------+----------------------+----------
+              Total |       249         56 |       305 
+                    |     249.0       56.0 |     305.0 
+
+          Pearson chi2(2) =   4.8214   Pr = 0.090
+               Cramér's V =   0.1257
+
+--- sitmatm x etat (nourrissons) ---
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+             |  État de l'enfant à
+             |       la sortie
+   Situation |      (1=Décédé,
+matrimoniale |       0=Vivant)
+  de la mère |    Vivant     Décédé |     Total
+-------------+----------------------+----------
+ Célibataire |       173         38 |       211 
+             |     172.3       38.7 |     211.0 
+-------------+----------------------+----------
+      Mariée |        23          2 |        25 
+             |      20.4        4.6 |      25.0 
+-------------+----------------------+----------
+   Polygamie |        18          6 |        24 
+             |      19.6        4.4 |      24.0 
+-------------+----------------------+----------
+  Veuve/Veuf |        35         10 |        45 
+             |      36.7        8.3 |      45.0 
+-------------+----------------------+----------
+       Total |       249         56 |       305 
+             |     249.0       56.0 |     305.0 
+
+          Pearson chi2(3) =   2.9611   Pr = 0.398
+               Cramér's V =   0.0985
+
+--- rang x etat (nourrissons) ---
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+           |  État de l'enfant à
+      Rang |       la sortie
+ catégoris |      (1=Décédé,
+ é dans la |       0=Vivant)
+   fratrie |    Vivant     Décédé |     Total
+-----------+----------------------+----------
+  Rang 1-2 |        78         12 |        90 
+           |      73.5       16.5 |      90.0 
+-----------+----------------------+----------
+  Rang 3-4 |        78         15 |        93 
+           |      75.9       17.1 |      93.0 
+-----------+----------------------+----------
+   Rang 5+ |        93         29 |       122 
+           |      99.6       22.4 |     122.0 
+-----------+----------------------+----------
+     Total |       249         56 |       305 
+           |     249.0       56.0 |     305.0 
+
+          Pearson chi2(2) =   4.2085   Pr = 0.122
+               Cramér's V =   0.1175
+
+--- durhosp x etat (nourrissons) ---
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+             |  État de l'enfant à
+    Albumine |       la sortie
+     sérique |      (1=Décédé,
+  catégorisé |       0=Vivant)
+     e (g/L) |    Vivant     Décédé |     Total
+-------------+----------------------+----------
+    < 23 g/L |        38         15 |        53 
+             |      43.3        9.7 |      53.0 
+-------------+----------------------+----------
+23-29.99 g/L |       120         29 |       149 
+             |     121.6       27.4 |     149.0 
+-------------+----------------------+----------
+    ≥ 30 g/L |        91         12 |       103 
+             |      84.1       18.9 |     103.0 
+-------------+----------------------+----------
+       Total |       249         56 |       305 
+             |     249.0       56.0 |     305.0 
+
+          Pearson chi2(2) =   6.7092   Pr = 0.035
+               Cramér's V =   0.1483
+
+--- pbr x etat (nourrissons) ---
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+           |  État de l'enfant à
+  Périmètr |       la sortie
+e brachial |      (1=Décédé,
+ catégoris |       0=Vivant)
+    é (mm) |    Vivant     Décédé |     Total
+-----------+----------------------+----------
+  < 125 mm |       101         39 |       140 
+           |     114.3       25.7 |     140.0 
+-----------+----------------------+----------
+125-134 mm |        80         13 |        93 
+           |      75.9       17.1 |      93.0 
+-----------+----------------------+----------
+  ≥ 135 mm |        68          4 |        72 
+           |      58.8       13.2 |      72.0 
+-----------+----------------------+----------
+     Total |       249         56 |       305 
+           |     249.0       56.0 |     305.0 
+
+          Pearson chi2(2) =  17.4905   Pr = 0.000
+               Cramér's V =   0.2395
+
+--- oed x etat (nourrissons) ---
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+           |  État de l'enfant à
+           |       la sortie
+ Situation |      (1=Décédé,
+       des |       0=Vivant)
+    œdèmes |    Vivant     Décédé |     Total
+-----------+----------------------+----------
+   Absence |       233         50 |       283 
+           |     231.0       52.0 |     283.0 
+-----------+----------------------+----------
+  Présence |        16          6 |        22 
+           |      18.0        4.0 |      22.0 
+-----------+----------------------+----------
+     Total |       249         56 |       305 
+           |     249.0       56.0 |     305.0 
+
+          Pearson chi2(1) =   1.2563   Pr = 0.262
+               Cramér's V =   0.0642
+
+--- diar x etat (nourrissons) ---
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+           |  État de l'enfant à
+  Diarrhée |       la sortie
+         à |      (1=Décédé,
+l'admissio |       0=Vivant)
+         n |    Vivant     Décédé |     Total
+-----------+----------------------+----------
+       Non |       164         31 |       195 
+           |     159.2       35.8 |     195.0 
+-----------+----------------------+----------
+       Oui |        85         25 |       110 
+           |      89.8       20.2 |     110.0 
+-----------+----------------------+----------
+     Total |       249         56 |       305 
+           |     249.0       56.0 |     305.0 
+
+          Pearson chi2(1) =   2.1886   Pr = 0.139
+               Cramér's V =   0.0847
+
+--- peau x etat (nourrissons) ---
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+       Pli |
+    cutané |  État de l'enfant à
+sous-scapu |       la sortie
+   laire à |      (1=Décédé,
+l'admissio |       0=Vivant)
+         n |    Vivant     Décédé |     Total
+-----------+----------------------+----------
+       Non |       227         48 |       275 
+           |     224.5       50.5 |     275.0 
+-----------+----------------------+----------
+       Oui |        22          8 |        30 
+           |      24.5        5.5 |      30.0 
+-----------+----------------------+----------
+     Total |       249         56 |       305 
+           |     249.0       56.0 |     305.0 
+
+          Pearson chi2(1) =   1.5314   Pr = 0.216
+               Cramér's V =   0.0709
+
+--- mala x etat (nourrissons) ---
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+           |  État de l'enfant à
+ Paludisme |       la sortie
+         à |      (1=Décédé,
+l'admissio |       0=Vivant)
+         n |    Vivant     Décédé |     Total
+-----------+----------------------+----------
+       Non |       172         45 |       217 
+           |     177.2       39.8 |     217.0 
+-----------+----------------------+----------
+       Oui |        77         11 |        88 
+           |      71.8       16.2 |      88.0 
+-----------+----------------------+----------
+     Total |       249         56 |       305 
+           |     249.0       56.0 |     305.0 
+
+          Pearson chi2(1) =   2.8342   Pr = 0.092
+               Cramér's V =  -0.0964
+
+--- v18_2cat x etat (nourrissons) ---
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+                      |  État de l'enfant à
+                      |       la sortie
+     Risque d'escarre |      (1=Décédé,
+         (recodé en 2 |       0=Vivant)
+          catégories) |    Vivant     Décédé |     Total
+----------------------+----------------------+----------
+             À risque |       157         43 |       200 
+                      |     163.3       36.7 |     200.0 
+----------------------+----------------------+----------
+Haut / très haut risq |        92         13 |       105 
+                      |      85.7       19.3 |     105.0 
+----------------------+----------------------+----------
+                Total |       249         56 |       305 
+                      |     249.0       56.0 |     305.0 
+
+          Pearson chi2(1) =   3.8197   Pr = 0.051
+               Cramér's V =  -0.1119
+
+. 
+. * Variable quantitative : âge
+. di _newline "--- age x etat (nourrissons) ---"
+
+--- age x etat (nourrissons) ---
+
+. quietly swilk age
+
+. local p_sw = r(p)
+
+. if `p_sw' >= 0.05 {
+.     di "  Shapiro-Wilk p = " string(`p_sw', "%6.4f") " -> normal -> ANOVA"
+  Shapiro-Wilk p = 0.1156 -> normal -> ANOVA
+.     anova age etat
+
+                         Number of obs =        305    R-squared     =  0.0222
+                         Root MSE      =    3.13578    Adj R-squared =  0.0189
+
+                  Source | Partial SS         df         MS        F    Prob>F
+              -----------+----------------------------------------------------
+                   Model |  67.554175          1   67.554175      6.87  0.0092
+                         |
+                    etat |  67.554175          1   67.554175      6.87  0.0092
+                         |
+                Residual |  2979.4294        303   9.8331004  
+              -----------+----------------------------------------------------
+                   Total |  3046.9836        304   10.022972  
+. }
+
+. else {
+.     di "  Shapiro-Wilk p = " string(`p_sw', "%6.4f") " -> non normal -> Mann-Whitney"
+.     ranksum age, by(etat)
+. }
+
+. bysort etat : tabstat age, stat(n mean median sd) col(stat)
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-> etat = Vivant
+
+    Variable |         N      Mean       p50        SD
+-------------+----------------------------------------
+         age |       249  6.108434         6  3.105713
+------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-> etat = Décédé
+
+    Variable |         N      Mean       p50        SD
+-------------+----------------------------------------
+         age |        56  4.892857         5  3.267908
+------------------------------------------------------
+
+. 
+. 
+. /*-----------------------------------------------------------------------
+> *   5.6 VÉRIFICATION DE LA PUISSANCE STATISTIQUE
+> *
+> *   Règle empirique : au moins 10 événements (décès) par variable
+> *   explicative dans un modèle logistique. Ce bloc vérifie que le
+> *   nombre de décès chez les nourrissons est compatible avec le nombre
+> *   de variables envisagées dans le modèle.
+> *-----------------------------------------------------------------------*/
+. 
+. di _newline "=== VÉRIFICATION DE LA PUISSANCE ==="
+
+=== VÉRIFICATION DE LA PUISSANCE ===
+
+. count if etat == 1
+  56
+
+. local n_deces = r(N)
+
+. di "  Nombre de décès chez les nourrissons : " `n_deces'
+  Nombre de décès chez les nourrissons : 56
+
+. di "  Nombre max de variables recommandé   : " int(`n_deces' / 10)
+  Nombre max de variables recommandé   : 5
+
+. di "  (règle empirique : 10 événements par variable)"
+  (règle empirique : 10 événements par variable)
+
+. 
+. /*=======================================================================
+> *   RÉGRESSION LOGISTIQUE — NOURRISSONS (0-11 MOIS)
+> *=======================================================================*/
+. 
+. /*-----------------------------------------------------------------------
+> *   1. SÉLECTION DES VARIABLES PAR PROCÉDURE BACKWARD
+> *-----------------------------------------------------------------------*/
+. 
+. stepwise, pr(.05): logit etat age i.rang i.durhosp i.pbr              ///
+>     i.sexe i.etum i.diar i.peau i.mala i.v18_2cat i.sitmatm i.oed
+note: 1b.rang omitted because of estimability.
+note: 0b.durhosp omitted because of estimability.
+note: 1b.pbr omitted because of estimability.
+note: 1b.sexe omitted because of estimability.
+note: 0b.etum omitted because of estimability.
+note: 0b.diar omitted because of estimability.
+note: 0b.peau omitted because of estimability.
+note: 0b.mala omitted because of estimability.
+note: 0b.v18_2cat omitted because of estimability.
+note: 0b.sitmatm omitted because of estimability.
+note: 0b.oed omitted because of estimability.
+
+Wald test, begin with full model:
+p = 0.9251 >= 0.0500, removing 2.rang
+p = 0.8768 >= 0.0500, removing 1.mala
+p = 0.8873 >= 0.0500, removing 2.sexe
+p = 0.6869 >= 0.0500, removing 1.peau
+p = 0.5129 >= 0.0500, removing 2.sitmatm
+p = 0.6040 >= 0.0500, removing 3.sitmatm
+p = 0.4192 >= 0.0500, removing 1.v18_2cat
+p = 0.3421 >= 0.0500, removing 1.durhosp
+p = 0.2878 >= 0.0500, removing 2.etum
+p = 0.3514 >= 0.0500, removing 1.etum
+p = 0.1919 >= 0.0500, removing 1.sitmatm
+p = 0.1665 >= 0.0500, removing 1.oed
+p = 0.1621 >= 0.0500, removing 3.rang
+p = 0.1245 >= 0.0500, removing 1.diar
+
+Logistic regression                                     Number of obs =    305
+                                                        LR chi2(4)    =  27.79
+                                                        Prob > chi2   = 0.0000
+Log likelihood = -131.53685                             Pseudo R2     = 0.0955
+
+------------------------------------------------------------------------------
+        etat | Coefficient  Std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         age |  -.1053076    .050607    -2.08   0.037    -.2044956   -.0061197
+             |
+         pbr |
+ 125-134 mm  |  -.8418498   .3611138    -2.33   0.020     -1.54962   -.1340798
+   ≥ 135 mm  |   -1.70178   .5550964    -3.07   0.002    -2.789749   -.6138108
+             |
+     durhosp |
+   ≥ 30 g/L  |  -.8151156   .3687581    -2.21   0.027    -1.537868    -.092363
+       _cons |   -.179092   .3376744    -0.53   0.596    -.8409218    .4827377
+------------------------------------------------------------------------------
+
+. 
+. /*-----------------------------------------------------------------------
+> *   3. MODÈLE FINAL AVEC ODDS RATIOS
+> *-----------------------------------------------------------------------*/
+. 
+. logit etat age i.pbr i.durhosp, or
+
+Iteration 0:   log likelihood = -145.42963  
+Iteration 1:   log likelihood = -132.00097  
+Iteration 2:   log likelihood = -130.83111  
+Iteration 3:   log likelihood = -130.82048  
+Iteration 4:   log likelihood = -130.82047  
+
+Logistic regression                                     Number of obs =    305
+                                                        LR chi2(5)    =  29.22
+                                                        Prob > chi2   = 0.0000
+Log likelihood = -130.82047                             Pseudo R2     = 0.1005
+
+-------------------------------------------------------------------------------
+         etat | Odds ratio   Std. err.      z    P>|z|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+          age |   .8893814   .0462304    -2.26   0.024     .8032343    .9847679
+              |
+          pbr |
+  125-134 mm  |   .4626828   .1694842    -2.10   0.035     .2256741    .9486041
+    ≥ 135 mm  |   .1923232   .1072012    -2.96   0.003     .0645016    .5734462
+              |
+      durhosp |
+23-29.99 g/L  |   .6189813   .2459044    -1.21   0.227     .2841309    1.348456
+    ≥ 30 g/L  |   .3128859    .145312    -2.50   0.012     .1259119    .7775084
+              |
+        _cons |   1.221211   .5633042     0.43   0.665     .4944923    3.015934
+-------------------------------------------------------------------------------
+Note: _cons estimates baseline odds.
+
+. 
+. 
+. /*-----------------------------------------------------------------------
+> *   4. TESTS DE VALIDATION
+> *-----------------------------------------------------------------------*/
+. 
+. * Règle de pouce : D / v
+. scalar D        = -2 * e(ll)
+
+. scalar df_v     = e(N) - e(df_m) - 1
+
+. scalar ratio_Dv = D / df_v
+
+. di "D/v = " ratio_Dv
+D/v = .87505334
+
+. 
+. * Hosmer-Lemeshow
+. estat gof, group(10)
+note: obs collapsed on 10 quantiles of estimated probabilities.
+
+Goodness-of-fit test after logistic model
+Variable: etat
+
+ Number of observations =    305
+       Number of groups =     10
+Hosmer–Lemeshow chi2(8) =   8.40
+            Prob > chi2 = 0.3958
+
+. 
+. * Résidus de Pearson
+. predict res_pearson, residuals
+
+. quietly {
+
+. scalar pval_res = chi2tail(e(N) - e(df_m) - 1, chi2_obs)
+
+. di "Chi² résidus de Pearson = " chi2_obs
+Chi² résidus de Pearson = 324.41071
+
+. di "p-valeur                = " pval_res
+p-valeur                = .14960218
+
+. 
+. scatter res_pearson age,                                               ///
+>     yline( 2, lcolor(red) lpattern(dash))                              ///
+>     yline(-2, lcolor(red) lpattern(dash))                              ///
+>     mcolor("$c1"%60) msymbol(circle_hollow)                            ///
+>     title("Distribution des résidus de Pearson — nourrissons",         ///
+>           size(medium))                                                ///
+>     subtitle("Hôpital de Lwiro, 1986-1988", size(small))              ///
+>     xtitle("Âge (mois)") ytitle("Résidu de Pearson")                   ///
+>     graphregion(color(white)) bgcolor(white)
+
+. graph export "Graphiques\residus_nourrissons.png", replace width(1200)
+(file Graphiques\residus_nourrissons.png not found)
+file Graphiques\residus_nourrissons.png saved as PNG format
+
+. drop res_pearson
+
+. 
+. * Linktest
+. linktest
+
+Iteration 0:   log likelihood = -145.42963  
+Iteration 1:   log likelihood = -131.57564  
+Iteration 2:   log likelihood = -130.19992  
+Iteration 3:   log likelihood = -130.18399  
+Iteration 4:   log likelihood = -130.18397  
+Iteration 5:   log likelihood = -130.18397  
+
+Logistic regression                                     Number of obs =    305
+                                                        LR chi2(2)    =  30.49
+                                                        Prob > chi2   = 0.0000
+Log likelihood = -130.18397                             Pseudo R2     = 0.1048
+
+------------------------------------------------------------------------------
+        etat | Coefficient  Std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        _hat |   1.664358   .6204933     2.68   0.007     .4482136    2.880503
+      _hatsq |   .2088427   .1791504     1.17   0.244    -.1422857    .5599711
+       _cons |   .3840553   .4589077     0.84   0.403    -.5153872    1.283498
+------------------------------------------------------------------------------
+
+. 
+. * Matrice de classification
+. estat classification
+
+Logistic model for etat
+
+              -------- True --------
+Classified |         D            ~D  |      Total
+-----------+--------------------------+-----------
+     +     |         3             0  |          3
+     -     |        53           249  |        302
+-----------+--------------------------+-----------
+   Total   |        56           249  |        305
+
+Classified + if predicted Pr(D) >= .5
+True D defined as etat != 0
+--------------------------------------------------
+Sensitivity                     Pr( +| D)    5.36%
+Specificity                     Pr( -|~D)  100.00%
+Positive predictive value       Pr( D| +)  100.00%
+Negative predictive value       Pr(~D| -)   82.45%
+--------------------------------------------------
+False + rate for true ~D        Pr( +|~D)    0.00%
+False - rate for true D         Pr( -| D)   94.64%
+False + rate for classified +   Pr(~D| +)    0.00%
+False - rate for classified -   Pr( D| -)   17.55%
+--------------------------------------------------
+Correctly classified                        82.62%
+--------------------------------------------------
+
+. 
+. * Courbe ROC
+. lroc,                                                                  ///
+>     title("Courbe ROC — nourrissons", size(medium))                    ///
+>     subtitle("Hôpital de Lwiro, 1986-1988", size(small))              ///
+>     graphregion(color(white)) bgcolor(white)
+
+Logistic model for etat
+
+Number of observations =      305
+Area under ROC curve   =   0.7269
+
+. graph export "Graphiques\ROC_nourrissons.png", replace width(1200)
+(file Graphiques\ROC_nourrissons.png not found)
+file Graphiques\ROC_nourrissons.png saved as PNG format
+
+. 
+. log close
+      name:  <unnamed>
+       log:  <dossier de travail>\analyse_stata1.lo
+> g
+  log type:  text
+ closed on:  18 Jun 2026, 18:49:56
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
